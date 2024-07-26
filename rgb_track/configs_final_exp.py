@@ -98,7 +98,7 @@ test_image_transform = tv.transforms.Compose([
 ])
 
 
-def get_config(protocol_name):
+def get_config(protocol_name, batch_size):
     config = {
         'head_config': {
             'task_name': 'rgb_track',
@@ -143,7 +143,7 @@ def get_config(protocol_name):
         'train_process_config': {
             'nthreads': 8,
             'ngpu': 1,
-            'batchsize': 32,
+            'batchsize': batch_size,
             'nepochs': 5,
             'resume': None,
             'optimizer_config': {
@@ -202,6 +202,11 @@ if __name__ == '__main__':
                         type=str,
                         default='experiments/',
                         help='Path to save options')
+    parser.add_argument('--batchsize',
+                   type=int,
+                   default=32,
+                   help='Batch size for training')
+
     args = parser.parse_args()
 
     for idx in range(1, 4):
