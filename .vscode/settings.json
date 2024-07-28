@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./at_learner_core"
+    ]
+}
