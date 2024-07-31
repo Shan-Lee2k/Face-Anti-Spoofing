@@ -26,17 +26,15 @@ def get_config(protocol_name):
                 }
             },
             'nthreads': 8,
-            'batch_size': 32,
+            'batch_size': 64,
         },
 
         'logger_config': {
             'logger_type': 'log_combiner',
             'loggers': [
                 {'logger_type': 'test_terminal',
-                 'log_batch_interval': 5,
                  'show_metrics': {
-                     'name': 'acer',
-                     'fpr': 0.01,
+                     'name': 'accuracy',
                  }},
             ]
 
