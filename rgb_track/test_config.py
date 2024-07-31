@@ -32,13 +32,15 @@ def get_config(protocol_name):
         'logger_config': {
             'logger_type': 'log_combiner',
             'loggers': [
-                {'logger_type': 'test_terminal',
+                {'logger_type': 'terminal',
+                 'log_batch_interval': 5,
                  'show_metrics': {
                      'name': 'acer',
                      'fpr': 0.01,
                  }},
-                ],
-        }
+            ]
+
+        },
     }
 
     ns_conf = argparse.Namespace()
