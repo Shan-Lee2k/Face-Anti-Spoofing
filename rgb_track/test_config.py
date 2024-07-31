@@ -32,7 +32,7 @@ def get_config(protocol_name):
         'logger_config': {
             'logger_type': 'log_combiner',
             'loggers': [
-                {'logger_type': 'terminal',
+                {'logger_type': 'test_terminal',
                  'log_batch_interval': 5,
                  'show_metrics': {
                      'name': 'acer',
