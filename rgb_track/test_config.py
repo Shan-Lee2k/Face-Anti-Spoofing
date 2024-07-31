@@ -32,19 +32,10 @@ def get_config(protocol_name):
         'logger_config': {
             'logger_type': 'log_combiner',
             'loggers': [
-                {'logger_type': 'test_filelogger',
-                 'show_metrics': {
-                     'name': 'acer',
-                 },
-                },
                 {'logger_type': 'test_terminal',
                  'show_metrics': {
                      'name': 'acer',
                      'fpr': 0.01,
-                 }},
-                {'logger_type': 'test_terminal',
-                 'show_metrics': {
-                     'name': 'accuracy',
                  }},
                 ],
         }
