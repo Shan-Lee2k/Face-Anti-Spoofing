@@ -28,7 +28,7 @@ if __name__ == '__main__':
     df['depth_path'] = df.depth_path.apply(lambda x: os.path.join(args.data_path,re.match(pattern, x).group(1), x))
     df.to_csv('./dev_list.txt', index=False)
 
-    df = pd.read_csv('./dev_test_list.txt')
+    df = pd.read_csv('./dev_test_list_v1.txt')
     df['rgb_path'] = df.rgb_path.apply(lambda x: os.path.join(args.data_path,re.match(pattern, x).group(1), x))
     df['ir_path'] = df.ir_path.apply(lambda x: os.path.join(args.data_path,re.match(pattern, x).group(1), x))
     df['depth_path'] = df.depth_path.apply(lambda x: os.path.join(args.data_path,re.match(pattern, x).group(1), x))
