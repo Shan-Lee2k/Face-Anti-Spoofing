@@ -214,7 +214,6 @@ if __name__ == '__main__':
 
     for idx in range(1, 4):
         configs = get_config(f'protocol_4_{idx}',args.batchsize, args.lr)
-        print(configs)
         out_path = os.path.join(args.savepath,
                                 configs.head_config.task_name,
                                 configs.head_config.exp_name)
