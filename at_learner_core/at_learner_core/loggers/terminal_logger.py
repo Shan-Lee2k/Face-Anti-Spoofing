@@ -63,7 +63,7 @@ class TerminalLogger(logger.Logger):
             metrics_i_string = 'Acc {acc:.3f}\t'.format(acc=self.root.test_info.metric.get_accuracy())
             out_test += metrics_i_string
         elif self.logger_config.show_metrics.name == 'acer':
-            all_acer_metrics_dict = self.root.train_info.metric.get_all_metrics()
+            all_acer_metrics_dict = self.root.train_info.metric.get_all_metrics(0.5)
             for thr, results in all_acer_metrics_dict.items():
                 acer = results['acer']
                 apcer = results['apcer']
@@ -71,7 +71,7 @@ class TerminalLogger(logger.Logger):
                 metrics_i_string = f'THR: {thr:.4f}, ACER: {acer:.4f}, APCER: {apcer:.4f}, BPCER: {bpcer:.4f}\t'
                 out_train += metrics_i_string
 
-            all_acer_metrics_dict = self.root.test_info.metric.get_all_metrics()
+            all_acer_metrics_dict = self.root.test_info.metric.get_all_metrics(0.5)
             for thr, results in all_acer_metrics_dict.items():
                 acer = results['acer']
                 apcer = results['apcer']
