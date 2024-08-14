@@ -106,7 +106,8 @@ class ACERMeter(object):
         y_pred_bin[y_pred_bin >= thr] = 1
 
         tn, fp, fn, tp = confusion_matrix(self.target, y_pred_bin).ravel()
-        # print(TP)
+        print(f"FP:{fp}")
+        print(f"FN:{fn}")
         apcer = fp / (tn + fp)
         bpcer = fn / (fn + tp)
         acer = (apcer + bpcer) / 2
