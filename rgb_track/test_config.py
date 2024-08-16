@@ -26,7 +26,7 @@ def get_config(protocol_name):
                 }
             },
             'nthreads': 8,
-            'batch_size': 64,
+            'batch_size': 512,
         },
 
         'logger_config': {
