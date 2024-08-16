@@ -82,7 +82,7 @@ train_image_transform = tv.transforms.Compose([
             ])
         ], p=0.5),
     ], key_list=['data']),
-    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)), 'data', 'optical_flow'),
+    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 4), (L - 8, L)), 'data', 'optical_flow'),
     #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 1), (2, 4)), 'data', 'optical_flow_start'),
     postprocess_transform
 
