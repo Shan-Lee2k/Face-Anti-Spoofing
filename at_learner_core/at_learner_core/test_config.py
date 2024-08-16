@@ -21,7 +21,7 @@ def get_config():
                 }
             },
             'nthreads': 8,
-            'batch_size': 128,
+            'batch_size': 1024,
         },
 
         'logger_config': {
