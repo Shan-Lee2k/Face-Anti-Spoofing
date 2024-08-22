@@ -12,7 +12,7 @@ from PIL import Image
 
 L = 16
 image_size = 112
-modality_list = ['stat_r1000', 'stat_r1']
+modality_list = ['stat_r1'] # 'stat_r1000', 
 of_modality_list = ['optical_flow']#, 'optical_flow_start']
 
 test_seq_transform = tv.transforms.Compose([
@@ -33,7 +33,7 @@ preprocess_transform = transforms.Transform4EachElement([
 ])
 
 postprocess_transform = tv.transforms.Compose([
-    #transforms.CreateNewItem(transforms.RankPooling(C=1000), 'data', 'stat_r1000'),
+    transforms.CreateNewItem(transforms.RankPooling(C=1000), 'data', 'stat_r1000'),
     transforms.CreateNewItem(transforms.RankPooling(C=1), 'data', 'stat_r1'),
 
     transforms.DeleteKeys(['data']),
