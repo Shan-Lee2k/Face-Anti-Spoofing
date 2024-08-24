@@ -12,8 +12,8 @@ from PIL import Image
 
 L = 16
 image_size = 112
-modality_list = ['stat_r1'] # 'stat_r1000', 
-of_modality_list = ['optical_flow']#, 'optical_flow_start']
+modality_list = ['stat_r1' ,'stat_r1000'] 
+of_modality_list = ['optical_flow' , 'optical_flow_start']
 
 test_seq_transform = tv.transforms.Compose([
     s_transforms.LinspaceTransform(L, key_list=['data']),
@@ -84,7 +84,7 @@ train_image_transform = tv.transforms.Compose([
     ], key_list=['data']),
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)), 'data', 'optical_flow'), #v1
     #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 2), (L - 12, L)), 'data', 'optical_flow'), #v2
-    #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 1), (2, 4)), 'data', 'optical_flow_start'),
+    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 1), (2, 4)), 'data', 'optical_flow_start'),
     postprocess_transform
 
 ])
@@ -94,7 +94,7 @@ test_image_transform = tv.transforms.Compose([
         preprocess_transform,
     ], key_list=['data']),
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, L-1), 'data', 'optical_flow'),
-    #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'data', 'optical_flow_start'),
+    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'data', 'optical_flow_start'),
     postprocess_transform
 ])
 
