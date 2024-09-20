@@ -23,7 +23,7 @@ def main():
     d = vars(config)
     for k in d.keys():
         print(k, ':', d[k])
-
+    print('=== Finished Options==')
     """ Fix random seed """
     random.seed(config.manual_seed)
     np.random.seed(config.manual_seed)
@@ -38,6 +38,7 @@ def main():
     print('Directory {} was successfully created.'.format(config.checkpoint_config.out_path))
 
     # Training
+    print('=== Start Training ... ===')
     runner = RGBRunner(config)
     runner.train()
 
