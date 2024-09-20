@@ -52,7 +52,15 @@ postprocess_transform = tv.transforms.Compose([
         tv.transforms.Resize(112),
         tv.transforms.ToTensor(),
         tv.transforms.Normalize(mean=[0.5], std=[0.5])],
-        key_list=modality_list)
+        key_list=modality_list),
+    
+    transforms.Transform4EachKey([
+        tv.transforms.Resize(112),
+        tv.transforms.ToTensor(),
+        tv.transforms.Normalize(mean=[0.5], std=[0.5])],
+        key_list=static_modality),
+    
+    
 ])
 
 train_image_transform = tv.transforms.Compose([
