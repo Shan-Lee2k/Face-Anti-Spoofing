@@ -13,6 +13,7 @@ class MultiModalWrapper(SimpleClassifierWrapper):
     def _init_modules(self, wrapper_config):
         self.input_modalities = wrapper_config.input_modalities
         for modal_key in self.input_modalities:
+            print(f"Modal_key: {modal_key}")
             if (modal_key == 'optical_flow') or (modal_key == 'optical_flow_start'):
                 backbone, feature_size = get_backbone(wrapper_config.backbone,
                                                       pretrained=wrapper_config.pretrained,
