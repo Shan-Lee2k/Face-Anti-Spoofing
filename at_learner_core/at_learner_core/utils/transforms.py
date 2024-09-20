@@ -39,7 +39,8 @@ class StaticImageTransform(object):
         else:
             index_image = np.random.randint(0, self.index_range + 1)
         static_img = images[index_image]
-        return static_img.astype(np.float32)
+        static_img = np.array(static_img).astype(np.float32)
+        return static_img
         
 class RandomZoom(object):
     def __init__(self, size):
