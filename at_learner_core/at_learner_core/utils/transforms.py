@@ -29,7 +29,18 @@ class CreateNewItem(object):
         format_string += str(self.key) + ', ' + str(self.new_key)
         format_string += ')'
         return format_string
-
+# Static Modality
+class StaticImageTransform(object):
+    def __init__(self, index_range):
+        self.index_range = index_range # int
+    def __call__(self, images):
+        if type(self.index_range) != int:
+            TypeError("Please type integer !!!")
+        else:
+            index_image = np.random.randint(0, self.index_range + 1)
+        static_img = images[index_image]
+        return static_img.astype(np.float32)
+        
 class RandomZoom(object):
     def __init__(self, size):
         self.size_min = size[0]
