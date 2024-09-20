@@ -87,7 +87,7 @@ train_image_transform = tv.transforms.Compose([
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 1), (2, 4)), 'data', 'optical_flow_start'),
 
     # Create static modality
-    transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'static')
+    transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
     postprocess_transform
 
 ])
@@ -100,7 +100,7 @@ test_image_transform = tv.transforms.Compose([
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'data', 'optical_flow_start'),
 
     # Create static modality
-    transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'static')
+    transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
     postprocess_transform
 ])
 
