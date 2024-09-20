@@ -12,8 +12,9 @@ from PIL import Image
 
 L = 16
 image_size = 112
-modality_list = ['stat_r1' ,'stat_r1000'] 
-of_modality_list = ['optical_flow' , 'optical_flow_start']
+modality_list = ['stat_r1000', 'stat_r1']
+of_modality_list = ['optical_flow'] #, 'optical_flow_start']
+static_modality = ['random_static_image']
 
 test_seq_transform = tv.transforms.Compose([
     s_transforms.LinspaceTransform(L, key_list=['data']),
@@ -82,9 +83,11 @@ train_image_transform = tv.transforms.Compose([
             ])
         ], p=0.5),
     ], key_list=['data']),
-    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)), 'data', 'optical_flow'), #v1
-    #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 2), (L - 12, L)), 'data', 'optical_flow'), #v2
+    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)), 'data', 'optical_flow'),
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 1), (2, 4)), 'data', 'optical_flow_start'),
+
+    # Create static modality
+    transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'static')
     postprocess_transform
 
 ])
@@ -95,12 +98,14 @@ test_image_transform = tv.transforms.Compose([
     ], key_list=['data']),
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, L-1), 'data', 'optical_flow'),
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'data', 'optical_flow_start'),
+
+    # Create static modality
+    transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'static')
     postprocess_transform
 ])
 
 
-
-def get_config(protocol_name,batch_size, learning_rate):
+def get_config(protocol_name, batch_size=32, learning_rate=0.0001):
     config = {
         'head_config': {
             'task_name': 'rgb_track',
@@ -170,7 +175,7 @@ def get_config(protocol_name,batch_size, learning_rate):
 
         'wrapper_config': {
             'wrapper_name': 'MultiModalWrapper',
-            'input_modalities': modality_list + of_modality_list, # Just Optical Flow
+            'input_modalities': modality_list + of_modality_list + static_modality,
             'backbone': 'simplenet112',
             'nclasses': 1,
             'loss': 'BCE',
@@ -209,13 +214,14 @@ if __name__ == '__main__':
                    default=32,
                    help='Batch size for training')
     parser.add_argument('--lr',
-                   type=float,
-                   default=0.0001,
-                   help='Batch size for training')
+                   type= float,
+                   default= 0.0001,
+                   help='Learning rate for training')
+
     args = parser.parse_args()
 
     for idx in range(1, 4):
-        configs = get_config(f'protocol_4_{idx}',args.batchsize, args.lr)
+        configs = get_config(f'protocol_4_{idx}', args.batchsize, args.lr)
         out_path = os.path.join(args.savepath,
                                 configs.head_config.task_name,
                                 configs.head_config.exp_name)
