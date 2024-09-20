@@ -40,6 +40,7 @@ class StaticImageTransform(object):
             index_image = np.random.randint(0, self.index_range)
         static_img = images[index_image]
         static_img = np.array(static_img).astype(np.float32)
+        print("Shape of output static image: {static_img.shape}")
         return static_img
         
 class RandomZoom(object):
@@ -84,6 +85,7 @@ class LiuOpticalFlowTransform(object):
         u, v, im2W = pyflow.coarse2fine_flow(im1, im2, alpha=0.012, ratio=0.75, minWidth=20,
                                              nOuterFPIterations=7, nInnerFPIterations=1,
                                              nSORIterations=30, colType=0)
+        print("Shape of output u and v: {u.shape} and {v.shape}")
         return [u.astype(np.float32), v.astype(np.float32)]
     
 
