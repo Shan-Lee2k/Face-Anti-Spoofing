@@ -43,7 +43,6 @@ class StaticImageTransform(object):
         static_img =  static_img.astype(np.uint8)
         static_img = Image.fromarray(static_img)  # Convert to PIL Image
         print(f"Type of static image after conversion: {type(static_img)}")
-        return static_imgter conversion: {type(static_img)}")
         return static_img
         
 class RandomZoom(object):
