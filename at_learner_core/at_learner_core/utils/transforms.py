@@ -39,7 +39,9 @@ class StaticImageTransform(object):
         else:
             index_image = np.random.randint(0, self.index_range)
         static_img = images[index_image]
-        static_img = np.array(static_img).astype(np.float32)
+        print(f"Type of static image before conversion: {type(static_img)}")
+        static_img = Image.fromarray(static_img.astype(np.uint8))  # Convert to PIL Image
+        print(f"Type of static image after conversion: {type(static_img)}")
         return static_img
         
 class RandomZoom(object):
