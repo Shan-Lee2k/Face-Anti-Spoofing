@@ -37,8 +37,10 @@ class StaticImageTransform(object):
         if type(self.index_range) != int:
             TypeError("Please type integer !!!")
         else:
-            index_image = np.random.randint(0, self.index_range)
+            #index_image = np.random.randint(0, self.index_range)
+            index_image = 0
         static_img = images[index_image]
+        static_img = np.array(static_img).astype(np.float32)
         return static_img
         
 class RandomZoom(object):
