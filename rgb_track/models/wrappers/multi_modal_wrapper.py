@@ -52,7 +52,7 @@ class MultiModalWrapper(SimpleClassifierWrapper):
         for idx, key in enumerate(self.input_modalities):
             features[:, idx, :] = getattr(self, 'backbone_' + key)(x[key])
         features = features.view((B, M, -1))
-
+        print(f"Features: {features}")
         features1 = self.pooling(features)
         features2 = self.pooling2(features)
         features3 = self.pooling3(-features)
