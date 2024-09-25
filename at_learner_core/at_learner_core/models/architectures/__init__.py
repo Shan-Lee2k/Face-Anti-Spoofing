@@ -6,7 +6,8 @@ def get_backbone(architecture_name,
     if architecture_name == 'MobilenetV2':
         from .mobilenetv2 import MobileNetV2
         model = MobileNetV2(pretrained=pretrained)
-        feature_size = 1280
+        #feature_size = 1280
+        feature_size = 256
     elif architecture_name.startswith('efficientnet-b'):
         from .efficientnet import EfficientNet
         if pretrained == 'ImageNet':
