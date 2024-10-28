@@ -118,7 +118,7 @@ class MobileNetV2(nn.Module):
         self.features = nn.Sequential(*features)
         # Add 256-channel layer after 1280 output
         self.projection_layer = nn.Sequential(
-            nn.Conv2d(self.last_channel, 256, kernel_size=1, bias=False),
+            nn.Conv2d(self.last_channel, add_last_channel, kernel_size=1, bias=False),
             nn.BatchNorm2d(256),
             nn.ReLU6(inplace=True)
         )
@@ -154,7 +154,7 @@ class MobileNetV2(nn.Module):
         x = self.features(x)
         x = self.projection_layer(x)
         x = nn.functional.adaptive_avg_pool2d(x, (1,1))
-        x = x.view(-1, self.add_last_channel)
+        x = x.view(-1, 256)
         #x = self.classifier(x)
         return x
     
