@@ -6,6 +6,10 @@ def get_backbone(architecture_name,
     if architecture_name == 'MobilenetV2':
         from .mobilenetv2 import MobileNetV2
         model = MobileNetV2(pretrained=pretrained)
+        if pretrained is None:
+            print("Changed backbone of static method: MobilenetV2 --- No pretrained")
+        else:
+            print("Changed backbone of static method: MobilenetV2 --- With pretrained")
         #feature_size = 1280
         feature_size = 256
     elif architecture_name.startswith('efficientnet-b'):
