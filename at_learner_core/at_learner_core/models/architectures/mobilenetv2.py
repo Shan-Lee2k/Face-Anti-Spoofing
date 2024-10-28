@@ -1,8 +1,9 @@
 from torch import nn
 import torch
-
+import torchvision
 pretrained_weights_dict = {
-    'ImageNet': '/media3/a.parkin/codes/replayliveness/models/pretrained/mobilenet_v2_imagenet.pth'
+    'ImageNet': '/media3/a.parkin/codes/replayliveness/models/pretrained/mobilenet_v2_imagenet.pth',
+    'FAS': 'C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenetv2-best.pt'
 }
 
 def _make_divisible(v, divisor, min_value=None):
@@ -79,8 +80,9 @@ class MobileNetV2(nn.Module):
         super(MobileNetV2, self).__init__()
         block = InvertedResidual
         input_channel = 32
-        #last_channel = 1280
-        last_channel = 256
+        last_channel = 1280
+        add_last_channel = 256
+        #last_channel = 256
 
         if inverted_residual_setting is None:
             inverted_residual_setting = [
@@ -114,6 +116,12 @@ class MobileNetV2(nn.Module):
         features.append(ConvBNReLU(input_channel, self.last_channel, kernel_size=1))
         # make it nn.Sequential
         self.features = nn.Sequential(*features)
+        # Add 256-channel layer after 1280 output
+        self.projection_layer = nn.Sequential(
+            nn.Conv2d(self.last_channel, 256, kernel_size=1, bias=False),
+            nn.BatchNorm2d(256),
+            nn.ReLU6(inplace=True)
+        )
 
         if pretrained is None:
             # weight initialization
@@ -134,12 +142,24 @@ class MobileNetV2(nn.Module):
             pretrained_weights = pretrained_weights['state_dict']
             new_weights = self.state_dict()
             for k, v in new_weights.items():
-                new_weights[k] = pretrained_weights['backbone.' + k]
+                if 'backbone.'+ k in pretrained_weights:
+                    if new_weights[k].shape == pretrained_weights[k].shape:
+                        new_weights[k] = pretrained_weights['backbone.' + k]    
+                else:
+                    self.load_state_dict(new_weights, strict=False)
+                
             self.load_state_dict(new_weights)
 
     def forward(self, x):
         x = self.features(x)
+        x = self.projection_layer(x)
         x = nn.functional.adaptive_avg_pool2d(x, (1,1))
-        x = x.view(-1, self.last_channel)
+        x = x.view(-1, self.add_last_channel)
         #x = self.classifier(x)
         return x
+    
+if __name__ == "__main__":
+    model = MobileNetV2(pretrained=pretrained_weights_dict['FAS'])
+    model_original = torchvision.models.MobileNetV2()
+    print(model)
+    
