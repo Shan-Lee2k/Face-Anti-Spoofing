@@ -113,7 +113,7 @@ test_image_transform = tv.transforms.Compose([
 ])
 
 
-def get_config(protocol_name, batch_size=32, learning_rate=0.0001, pretrained = None):
+def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, pretrained = None):
     config = {
         'head_config': {
             'task_name': 'rgb_track',
