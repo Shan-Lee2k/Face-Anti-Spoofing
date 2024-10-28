@@ -16,17 +16,17 @@ class MultiModalWrapper(SimpleClassifierWrapper):
             print(f"Modal_key: {modal_key}")
             if (modal_key == 'optical_flow') or (modal_key == 'optical_flow_start'):
                 backbone, feature_size = get_backbone(wrapper_config.backbone,
-                                                      pretrained=wrapper_config.pretrained,
+                                                      pretrained=None,
                                                       get_feature_size=True,
                                                       in_channels=2)
             elif modal_key == 'random_static_image':
                 backbone, feature_size = get_backbone(architecture_name='MobilenetV2',
                                                       pretrained=wrapper_config.pretrained,
                                                       get_feature_size=True)
-                print("Changed backbone of static method: MobilenetV2")
+                
             else:
                 backbone, feature_size = get_backbone(wrapper_config.backbone,
-                                                      pretrained=wrapper_config.pretrained,
+                                                      pretrained=None,
                                                       get_feature_size=True)
 
             setattr(self, 'backbone_' + modal_key, backbone)
@@ -70,3 +70,9 @@ class MultiModalWrapper(SimpleClassifierWrapper):
 
         loss = self.loss(output, x['target'])
         return output_dict, loss
+
+
+if __name__ == '__main__':
+    print("Experiment on Multi_Modal_Wrapper!!!")
+    model = MultiModalWrapper()
+    print(model)
