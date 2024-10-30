@@ -195,6 +195,7 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, pr
 
         'logger_config': {
             'logger_type': 'log_combiner',
+            'THR': THR,
             'loggers': [
                 {'logger_type': 'terminal',
                  'log_batch_interval': 5,
