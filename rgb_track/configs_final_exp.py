@@ -233,8 +233,8 @@ if __name__ == '__main__':
                    default= 0.5,
                    help='Threshold for testing')
     parser.add_argument('--pretrained',
-                   type= str,
-                   default= 0.5,
+                   type= str or None,
+                   default= None,
                    help='Pre-trained backbone for static modal')
     args = parser.parse_args()
 
