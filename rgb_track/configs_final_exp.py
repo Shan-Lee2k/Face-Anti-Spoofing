@@ -67,7 +67,7 @@ train_image_transform = tv.transforms.Compose([
     transforms.Transform4EachKey([
         preprocess_transform,
         
-        #tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
+        tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
     ], key_list=['data']),
     
     # Create static modality
