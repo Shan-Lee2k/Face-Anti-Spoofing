@@ -20,7 +20,7 @@ class MultiModalWrapper(SimpleClassifierWrapper):
                                                       get_feature_size=True,
                                                       in_channels=2)
             elif modal_key == 'random_static_image':
-                backbone, feature_size = get_backbone(architecture_name='MobilenetV2',
+                backbone, feature_size = get_backbone(architecture_name= wrapper_config.backbone,
                                                       pretrained=wrapper_config.pretrained,
                                                       get_feature_size=True)
                 
