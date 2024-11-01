@@ -53,9 +53,10 @@ class MobileNetV3_Custom(nn.Module):
             print(f"=====Create MobileNetv3 with pre-trained successfully=====")
             pretrained_weights = torch.load(pretrained, map_location='cpu')
             self.load_state_dict(pretrained_weights,strict=False)
-        # Freeze all feature extractor parameters
-        for param in self.features.parameters():
-            param.requires_grad = False  # Freeze all parameters
+            # Freeze all feature extractor parameters
+            for param in self.features.parameters():
+                param.requires_grad = False  # Freeze all parameters
+        
         # Define a new ConvBNActivation layer with desired output of 256
         self.custom_layer = ConvBNActivation(
             in_channels = last_channel[self.mode],
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     #print(pre_state_dict['features.0.0.weight'])
     #print(pre_state_dict['state_dict']['features.0.0.weight'])
     #print(len(pre_state_dict['state_dict']))
-    model = MobileNetV3_Custom(pretrained=pretrained_weights_dict['ImageNet_V2_Large'],mode='large')
+    model = MobileNetV3_Custom(pretrained= pretrained_weights_dict['ImageNet_V2_Large'],mode='large')
     # model = mobilenet_v3_small()
     print(model.eval())
     check_frozen_layers(model)
