@@ -3,9 +3,8 @@ import torch
 import math
 import torchvision
 import torch.nn as nn
-import torch.nn.functional as F
-import torchvision.models.mobilenet 
-import torchvision.models.mobilenetv3 
+
+
 
 pretrained_weights_dict = {
     'ImageNet_V2': "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_large-5c1a4163.pth",
