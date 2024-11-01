@@ -1,7 +1,6 @@
 
 import torch
-import math
-import torchvision
+from torchvision.models import mobilenet_v3_large, mobilenet_v3_small
 import torch.nn as nn
 
 
@@ -34,7 +33,7 @@ class MobileNetV3_Custom(nn.Module):
         super(MobileNetV3_Custom, self).__init__()
         
         # Load the pre-trained MobileNetV3 model
-        self.features = torchvision.models.mobilenet_v3_large(pretrained=False).features
+        self.features = mobilenet_v3_large(pretrained=False).features
         # Load pre-trained weights if provided
         if pretrained is not None:
             print(f"=====Create MobileNetv3 with pre-trained successfully=====")
