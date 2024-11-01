@@ -37,8 +37,8 @@ class StaticImageTransform(object):
         if type(self.index_range) != int:
             TypeError("Please type integer !!!")
         else:
-            #index_image = np.random.randint(0, self.index_range)
-            index_image = 0
+            index_image = np.random.randint(0, self.index_range)
+            #index_image = 0
         static_img = images[index_image]
         return static_img
         
