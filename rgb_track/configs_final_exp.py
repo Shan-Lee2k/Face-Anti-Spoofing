@@ -188,6 +188,7 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, pr
             'wrapper_name': 'MultiModalWrapper',
             'input_modalities': modality_list + of_modality_list + static_modality, 
             'backbone': 'simplenet112',
+            'backbone_static':'MobileNetV2',
             'nclasses': 1,
             'loss': 'BCE',
             'pretrained': pretrained,
