@@ -1,19 +1,29 @@
 
 import torch
 from torchvision.models import mobilenet_v3_large, mobilenet_v3_small
+import torchvision
 import torch.nn as nn
 
 
 
+
 pretrained_weights_dict = {
-    'ImageNet_V2': "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_large-5c1a4163.pth",
+    'ImageNet_V2_Large': "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_large-5c1a4163.pth",
+    'ImageNet_V1_Small':  "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_small-047dcff4.pth",
 }
+last_channel = {
+    'large' : 960,
+    'small' :576,
+}
+
 def check_frozen_layers(model):
-        for name, param in model.named_parameters():
-            if param.requires_grad:
-                print(f"Trainable parameter: {name} (Shape: {param.shape})")
-            else:
-                print(f"Frozen parameter: {name} (Shape: {param.shape})")
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            print(f"Trainable parameter: {name} (Shape: {param.shape})")
+        else:
+            print(f"Frozen parameter: {name} (Shape: {param.shape})")  
+    return 
+    
                 
 class ConvBNActivation(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, activation_layer):
@@ -29,11 +39,15 @@ class ConvBNActivation(nn.Module):
         x = self.activation(x)
         return x
 class MobileNetV3_Custom(nn.Module):
-    def __init__(self, pretrained = None, num_classes=2):
+    def __init__(self, pretrained = None, num_classes=2, mode = 'large' or 'small'):
         super(MobileNetV3_Custom, self).__init__()
+        self.mode = mode
         
         # Load the pre-trained MobileNetV3 model
-        self.features = mobilenet_v3_large(pretrained=False).features
+        if self.mode == 'large':
+            self.features = mobilenet_v3_large(pretrained=False).features
+        else: self.features = mobilenet_v3_small(pretrained=False).features
+            
         # Load pre-trained weights if provided
         if pretrained is not None:
             print(f"=====Create MobileNetv3 with pre-trained successfully=====")
@@ -44,7 +58,7 @@ class MobileNetV3_Custom(nn.Module):
             param.requires_grad = False  # Freeze all parameters
         # Define a new ConvBNActivation layer with desired output of 256
         self.custom_layer = ConvBNActivation(
-            in_channels=960,  # From MobileNetV3 last feature layer
+            in_channels = last_channel[self.mode],
             out_channels=256, # Desired output channels
             kernel_size=1,    # 1x1 convolution
             activation_layer=nn.Hardswish  # Hardswish activation
@@ -68,13 +82,16 @@ class MobileNetV3_Custom(nn.Module):
 
 if __name__ == '__main__':
     #model = torchvision.models.mobilenet_v3_large(pretrained= torch.load("MN3_antispoof.pth", map_location= 'cpu') )
-    pre_state_dict = torch.load(pretrained_weights_dict['ImageNet_V2'], map_location='cpu')
+    pre_state_dict = torch.load(pretrained_weights_dict['ImageNet_V1_Small'], map_location='cpu')
     #print(pre_state_dict['features.0.0.weight'])
     #print(pre_state_dict['state_dict']['features.0.0.weight'])
     #print(len(pre_state_dict['state_dict']))
-    model = MobileNetV3_Custom(pretrained=pretrained_weights_dict['ImageNet_V2'])
-    
+    model = MobileNetV3_Custom(pretrained=pretrained_weights_dict['ImageNet_V2_Large'],mode='large')
+    # model = mobilenet_v3_small()
+    print(model.eval())
     check_frozen_layers(model)
+    
+
     # pre_dict = torch.load(pretrained_weights_dict['ImageNet_V2'], map_location= 'cpu')
     # for k,v in pre_dict.items():
     #     print(k)
