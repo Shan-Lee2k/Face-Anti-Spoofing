@@ -10,6 +10,11 @@ from at_learner_core.utils import joint_transforms as j_transforms
 from at_learner_core.utils import sequence_transforms as s_transforms
 from PIL import Image
 
+pretrained_weights_dict = {
+    'ImageNet_V2_Large': "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_large-5c1a4163.pth",
+    'ImageNet_V1_Small':  "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_small-047dcff4.pth",
+}
+
 L = 16
 image_size = 112
 modality_list = ['stat_r1000', 'stat_r1']
@@ -41,7 +46,7 @@ postprocess_transform = tv.transforms.Compose([
 
     transforms.Transform4EachKey([
         transforms.Transform4EachElement([
-            # tv.transforms.Resize(112),
+            #tv.transforms.Resize(224),
             tv.transforms.ToTensor(),
         ]),
         transforms.StackTensors(squeeze=True),
@@ -49,14 +54,15 @@ postprocess_transform = tv.transforms.Compose([
     ], key_list=of_modality_list),
 
     transforms.Transform4EachKey([
-        tv.transforms.Resize(112),
+        tv.transforms.Resize(image_size),
         tv.transforms.ToTensor(),
         tv.transforms.Normalize(mean=[0.5], std=[0.5])],
         key_list=modality_list),
     
     transforms.Transform4EachKey([
         tv.transforms.Resize(112),
-        tv.transforms.ToTensor()],
+        tv.transforms.ToTensor(),
+        ],
         #tv.transforms.Normalize(mean=[0.5], std=[0.5])],
         key_list=static_modality),
     
@@ -69,7 +75,6 @@ train_image_transform = tv.transforms.Compose([
         
         tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
     ], key_list=['data']),
-    
     
     
     transforms.Transform4EachKey([
@@ -94,9 +99,10 @@ train_image_transform = tv.transforms.Compose([
             ])
         ], p=0.5),
     ], key_list=['data']),
-
+    
     # Create static modality
     transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
+    
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)), 'data', 'optical_flow'),
     #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 1), (2, 4)), 'data', 'optical_flow_start'),
 
@@ -109,6 +115,7 @@ test_image_transform = tv.transforms.Compose([
     transforms.Transform4EachKey([
         preprocess_transform,
     ], key_list=['data']),
+    
     # Create static modality
     transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, L-1), 'data', 'optical_flow'),
@@ -117,142 +124,3 @@ test_image_transform = tv.transforms.Compose([
     
     postprocess_transform
 ])
-
-
-def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, pretrained = None):
-    config = {
-        'head_config': {
-            'task_name': 'rgb_track',
-            'exp_name': f'exp1_{protocol_name}',
-            'text_comment': '',
-        },
-
-        'checkpoint_config': {
-            'out_path': None,
-            'save_frequency': 1,
-        },
-
-        'datalist_config': {
-            'trainlist_config': {
-                'dataset_name': 'VideoDataset',
-                'datalist_path': '../data/train_list.txt',
-                'protocol_name': protocol_name,
-                'data_columns': [('rgb_path', 'data')],
-                'target_columns': ('label', 'target'),
-                'group_column': 'video_id',
-                'sampler_config': {
-                    'name': 'NumElements',
-                    'class_column': 'label',
-                    'num_elem_per_epoch': 20.0,
-                },
-                'sequence_transforms': train_seq_transform,
-                'transforms': train_image_transform,
-
-            },
-            'testlist_configs': {
-                'dataset_name': 'VideoDataset',
-                'datalist_path': '../data/dev_list.txt',
-                'protocol_name': protocol_name,
-                'data_columns': [('rgb_path', 'data')],
-                'target_columns': ('label', 'target'),
-                'group_column': 'video_id',
-                'sequence_transforms': test_seq_transform,
-                'transforms': test_image_transform,
-            }
-        },
-
-        'train_process_config': {
-            'nthreads': 4, #os.cpu_count(),
-            'ngpu': 1,
-            'batchsize': batch_size,
-            'nepochs': 5,
-            'resume': None,
-            'optimizer_config': {
-                'name': 'Adam',
-                'lr_config': {
-                    'lr_type': 'StepLR',
-                    'lr': learning_rate,
-                    'lr_decay_period': 5,
-                    'lr_decay_lvl': 0.5,
-                },
-                'weight_decay': 1e-05,
-            },
-        },
-
-        'test_process_config': {
-            'run_frequency': 1,
-            'metric': {
-                'name': 'acer',
-                'target_column': 'target',
-            }
-        },
-
-        'wrapper_config': {
-            'wrapper_name': 'MultiModalWrapper',
-            'input_modalities': modality_list + of_modality_list + static_modality, 
-            'backbone': 'simplenet112',
-            'backbone_static':'MobilenetV3',
-            'nclasses': 1,
-            'loss': 'BCE',
-            'pretrained': pretrained,
-        },
-
-        'logger_config': {
-            'logger_type': 'log_combiner',
-            'THR': THR,
-            'loggers': [
-                {'logger_type': 'terminal',
-                 'log_batch_interval': 5,
-                 'show_metrics': {
-                     'name': 'acer',
-                     'fpr': 0.01,
-                 }},
-            ]
-
-        },
-        'manual_seed': 42,
-        'resume': None,
-    }
-
-    ns_conf = argparse.Namespace()
-    dict_to_namespace(ns_conf, config)
-    return ns_conf
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Options')
-    parser.add_argument('--savepath',
-                        type=str,
-                        default='experiments/',
-                        help='Path to save options')
-    parser.add_argument('--batchsize',
-                   type=int,
-                   default=16,
-                   help='Batch size for training')
-    parser.add_argument('--lr',
-                   type= float,
-                   default= 0.0001,
-                   help='Learning rate for training')
-    parser.add_argument('--thr',
-                   type= float,
-                   default= 0.5,
-                   help='Threshold for testing')
-    parser.add_argument('--pretrained',
-                   type= str or None,
-                   default= None,
-                   help='Pre-trained backbone for static modal')
-    args = parser.parse_args()
-
-    for idx in range(1, 4):
-        configs = get_config(f'protocol_4_{idx}', args.batchsize, args.lr, args.thr, args.pretrained)
-        out_path = os.path.join(args.savepath,
-                                configs.head_config.task_name,
-                                configs.head_config.exp_name)
-        os.makedirs(out_path, exist_ok=True)
-        if configs.checkpoint_config.out_path is None:
-            configs.checkpoint_config.out_path = out_path
-        filename = os.path.join(out_path,
-                                configs.head_config.task_name + '_' + configs.head_config.exp_name + '.config')
-
-        torch.save(configs, filename)
-        print('Options file was saved to ' + filename)
