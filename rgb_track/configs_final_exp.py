@@ -124,3 +124,128 @@ test_image_transform = tv.transforms.Compose([
     
     postprocess_transform
 ])
+
+def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, pretrained = None):
+    config = {
+        'head_config': {
+            'task_name': 'rgb_track',
+            'exp_name': f'exp1_{protocol_name}',
+            'text_comment': '',
+        },
+        'checkpoint_config': {
+            'out_path': None,
+            'save_frequency': 1,
+        },
+        'datalist_config': {
+            'trainlist_config': {
+                'dataset_name': 'VideoDataset',
+                'datalist_path': '../data/train_list.txt',
+                'protocol_name': protocol_name,
+                'data_columns': [('rgb_path', 'data')],
+                'target_columns': ('label', 'target'),
+                'group_column': 'video_id',
+                'sampler_config': {
+                    'name': 'NumElements',
+                    'class_column': 'label',
+                    'num_elem_per_epoch': 20.0,
+                },
+                'sequence_transforms': train_seq_transform,
+                'transforms': train_image_transform,
+            },
+            'testlist_configs': {
+                'dataset_name': 'VideoDataset',
+                'datalist_path': '../data/dev_list.txt',
+                'protocol_name': protocol_name,
+                'data_columns': [('rgb_path', 'data')],
+                'target_columns': ('label', 'target'),
+                'group_column': 'video_id',
+                'sequence_transforms': test_seq_transform,
+                'transforms': test_image_transform,
+            }
+        },
+        'train_process_config': {
+            'nthreads': 4, #os.cpu_count(),
+            'ngpu': 1,
+            'batchsize': batch_size,
+            'nepochs': 5,
+            'resume': None,
+            'optimizer_config': {
+                'name': 'Adam',
+                'lr_config': {
+                    'lr_type': 'StepLR',
+                    'lr': learning_rate,
+                    'lr_decay_period': 5,
+                    'lr_decay_lvl': 0.5,
+                },
+                'weight_decay': 1e-05,
+            },
+        },
+        'test_process_config': {
+            'run_frequency': 1,
+            'metric': {
+                'name': 'acer',
+                'target_column': 'target',
+            }
+        },
+        'wrapper_config': {
+            'wrapper_name': 'MultiModalWrapper',
+            'input_modalities': modality_list + of_modality_list + static_modality, 
+            'backbone': 'simplenet112',
+            'backbone_static':'MobilenetV3',
+            'nclasses': 1,
+            'loss': 'BCE',
+            'pretrained': pretrained,
+        },
+        'logger_config': {
+            'logger_type': 'log_combiner',
+            'THR': THR,
+            'loggers': [
+                {'logger_type': 'terminal',
+                 'log_batch_interval': 5,
+                 'show_metrics': {
+                     'name': 'acer',
+                     'fpr': 0.01,
+                 }},
+            ]
+        },
+        'manual_seed': 42,
+        'resume': None,
+    }
+    ns_conf = argparse.Namespace()
+    dict_to_namespace(ns_conf, config)
+    return ns_conf
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Options')
+    parser.add_argument('--savepath',
+                        type=str,
+                        default='experiments/',
+                        help='Path to save options')
+    parser.add_argument('--batchsize',
+                   type=int,
+                   default=16,
+                   help='Batch size for training')
+    parser.add_argument('--lr',
+                   type= float,
+                   default= 0.0001,
+                   help='Learning rate for training')
+    parser.add_argument('--thr',
+                   type= float,
+                   default= 0.5,
+                   help='Threshold for testing')
+    parser.add_argument('--pretrained',
+                   type= str or None,
+                   default= None,
+                   help='Pre-trained backbone for static modal')
+    args = parser.parse_args()
+    for idx in range(1, 4):
+        configs = get_config(f'protocol_4_{idx}', args.batchsize, args.lr, args.thr, args.pretrained)
+        out_path = os.path.join(args.savepath,
+                                configs.head_config.task_name,
+                                configs.head_config.exp_name)
+        os.makedirs(out_path, exist_ok=True)
+        if configs.checkpoint_config.out_path is None:
+            configs.checkpoint_config.out_path = out_path
+        filename = os.path.join(out_path,
+                                configs.head_config.task_name + '_' + configs.head_config.exp_name + '.config')
+        torch.save(configs, filename)
+        print('Options file was saved to ' + filename)
