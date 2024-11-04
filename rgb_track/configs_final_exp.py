@@ -93,9 +93,7 @@ train_image_transform = tv.transforms.Compose([
     transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
     
     transforms.Transform4EachKey([
-        transforms.Transform4EachKey([
-            tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
-        ], key_list=['data']),
+        tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
         tv.transforms.RandomApply([
             transforms.Transform4EachElement([
                 tv.transforms.RandomApply([
