@@ -25,7 +25,7 @@ def get_config(protocol_name):
                     'target_column': 'target'
                 }
             },
-            'nthreads': 4,
+            'nthreads': 8,
             'batch_size': 64,
         },
 
