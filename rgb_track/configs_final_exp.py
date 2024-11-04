@@ -59,12 +59,25 @@ postprocess_transform = tv.transforms.Compose([
         tv.transforms.Normalize(mean=[0.5], std=[0.5])],
         key_list=modality_list),
     
+    # transforms.Transform4EachKey([
+    #     tv.transforms.Resize(image_size),
+    #     tv.transforms.ToTensor(),
+    #     tv.transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])]
+
+    #     #,
+    #     ,key_list=static_modality),
+    
+    
+    # TRANSFORM FOR MOBILENETV3
     transforms.Transform4EachKey([
-        tv.transforms.Resize(112),
+        tv.transforms.Resize(256),
+        tv.transforms.CenterCrop(224),
         tv.transforms.ToTensor(),
-        ],
-        #tv.transforms.Normalize(mean=[0.5], std=[0.5])],
-        key_list=static_modality),
+        tv.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
+
+        #,
+        ,key_list=static_modality),
+    
     
     
 ])
@@ -164,7 +177,7 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, pr
             }
         },
         'train_process_config': {
-            'nthreads': 4, #os.cpu_count(),
+            'nthreads': 8, #os.cpu_count(),
             'ngpu': 1,
             'batchsize': batch_size,
             'nepochs': 5,
@@ -191,7 +204,7 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, pr
             'wrapper_name': 'MultiModalWrapper',
             'input_modalities': modality_list + of_modality_list + static_modality, 
             'backbone': 'simplenet112',
-            'backbone_static':'simplenet112', #'MobilenetV3',
+            'backbone_static':'MobilenetV3', #'simplenet112',
             'nclasses': 1,
             'loss': 'BCE',
             'pretrained': pretrained,
