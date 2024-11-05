@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.metrics import roc_curve
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
-
+import torch
 class AverageMeter(object):
     """Computes and stores the average and current value"""
 
@@ -93,9 +93,12 @@ class ACERMeter(object):
         if len(other_info) > 0:
             for k, v in other_info.items():
                 if k in self.other_info:
-                    self.other_info[k].extend(v)
+                    # Convert v to list if it's a tensor
+                    self.other_info[k].extend(v.tolist() if isinstance(v, torch.Tensor) else v)
                 else:
-                    self.other_info[k] = v
+                # Store as a list (convert if needed)
+                    self.other_info[k] = v.tolist() if isinstance(v, torch.Tensor) else v
+
 
     def get_all_metrics(self, thr=0.5):
         ":return ACER, APCER, BPCER"
