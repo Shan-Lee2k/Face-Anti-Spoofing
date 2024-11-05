@@ -140,7 +140,7 @@ test_image_transform = tv.transforms.Compose([
     postprocess_transform
 ])
 
-def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, pretrained = None):
+def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, nepochs=5, pretrained = None):
     config = {
         'head_config': {
             'task_name': 'rgb_track',
@@ -182,7 +182,7 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, pr
             'nthreads': os.cpu_count(), #os.cpu_count(),
             'ngpu': 1,
             'batchsize': batch_size,
-            'nepochs': 5,
+            'nepochs': nepochs,
             'resume': None,
             'optimizer_config': {
                 'name': 'Adam',
@@ -247,13 +247,18 @@ if __name__ == '__main__':
                    type= float,
                    default= 0.5,
                    help='Threshold for testing')
+    parser.add_argument('--nepochs',
+                   type= int,
+                   default= 5,
+                   help='Epoch')
     parser.add_argument('--pretrained',
                    type= str or None,
                    default= None,
                    help='Pre-trained backbone for static modal')
     args = parser.parse_args()
+
     for idx in range(1, 4):
-        configs = get_config(f'protocol_4_{idx}', args.batchsize, args.lr, args.thr, args.pretrained)
+        configs = get_config(f'protocol_4_{idx}', args.batchsize, args.lr, args.thr, args.nepochs, args.pretrained)
         out_path = os.path.join(args.savepath,
                                 configs.head_config.task_name,
                                 configs.head_config.exp_name)
@@ -262,5 +267,6 @@ if __name__ == '__main__':
             configs.checkpoint_config.out_path = out_path
         filename = os.path.join(out_path,
                                 configs.head_config.task_name + '_' + configs.head_config.exp_name + '.config')
+
         torch.save(configs, filename)
         print('Options file was saved to ' + filename)
