@@ -8,6 +8,7 @@ import torch.nn as nn
 
 
 pretrained_weights_dict = {
+    'MN3_CelebA': "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/MN3_antispoof.pth",
     'ImageNet_V2_Large': "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_large-5c1a4163.pth",
     'ImageNet_V1_Small':  "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_small-047dcff4.pth",
 }
@@ -52,7 +53,23 @@ class MobileNetV3_Custom(nn.Module):
         if pretrained is not None:
             print(f"=====Create MobileNetv3 with pre-trained successfully=====")
             pretrained_weights = torch.load(pretrained, map_location='cpu')
-            self.load_state_dict(pretrained_weights,strict=False)
+            if 'state_dict' in pretrained_weights.keys():
+                state_dict = pretrained_weights['state_dict']
+                new_dict = {}
+                list_new_key = list(self.state_dict().keys())
+                i = 0
+                for k,v in state_dict.items():
+                    if k.startswith('features'):
+                        if len(v.size()) == 2:
+                            new_dict[list_new_key[i]] = v.unsqueeze(-1).unsqueeze(-1)
+                        else: new_dict[list_new_key[i]] = v
+                        i+=1
+                    else:
+                        break
+                
+                # Load state_dict and make sure that dimension is suitable (Feature 1 to 15) Mobile 
+                self.load_state_dict(new_dict, strict= False)
+            else: self.load_state_dict(pretrained_weights,strict=False)
             # Freeze all feature extractor parameters
             for param in self.features.parameters():
                 param.requires_grad = False  # Freeze all parameters
@@ -83,21 +100,40 @@ class MobileNetV3_Custom(nn.Module):
 
 if __name__ == '__main__':
     #model = torchvision.models.mobilenet_v3_large(pretrained= torch.load("MN3_antispoof.pth", map_location= 'cpu') )
-    pre_state_dict = torch.load(pretrained_weights_dict['ImageNet_V1_Small'], map_location='cpu')
+    pre_state_dict = torch.load(pretrained_weights_dict['MN3_CelebA'], map_location='cpu')
+    state_dict = pre_state_dict['state_dict']
+ 
     #print(pre_state_dict['features.0.0.weight'])
     #print(pre_state_dict['state_dict']['features.0.0.weight'])
     #print(len(pre_state_dict['state_dict']))
-    model = MobileNetV3_Custom(pretrained= pretrained_weights_dict['ImageNet_V2_Large'],mode='large')
-    # model = mobilenet_v3_small()
-    print(model.eval())
+    model = MobileNetV3_Custom(pretrained= pretrained_weights_dict['MN3_CelebA'],mode='large')
+    model_mb3 = torchvision.models.mobilenet_v3_large()
+    #print(list(model_mb3.state_dict().keys()))
+    #print(state_dict.keys())
+    new_dict = {}
+    list_new_key = list(model_mb3.state_dict().keys())
+    i = 0
+    for k,v in state_dict.items():
+        if k.startswith('features'):
+            if len(v.size()) == 2: 
+                new_dict[list_new_key[i]] = v.unsqueeze(-1).unsqueeze(-1)
+            else: new_dict[list_new_key[i]] = v
+            i+=1
+        else:
+            break
+    model_mb3.load_state_dict(new_dict,strict=False)
+    print(model.state_dict()['features.15.block.3.1.weight'] == state_dict['features.15.conv.8.weight'])
     check_frozen_layers(model)
+            
+        
+        
     
-
     # pre_dict = torch.load(pretrained_weights_dict['ImageNet_V2'], map_location= 'cpu')
     # for k,v in pre_dict.items():
     #     print(k)
     #print(model.state_dict()['features.0.0.weight'])
-    
+    shaape = torch.Size([240, 960])
+    print(len(shaape))
     # #print(model.eval())
     # pre_state_dict = torch.load("MN3_antispoof.pth", map_location='cpu')
     # # print(state_dict['state_dict']['features.0.0.weight'])
