@@ -20,7 +20,7 @@ class MultiModalWrapper(SimpleClassifierWrapper):
                                                       get_feature_size=True,
                                                       in_channels=2)
             elif modal_key == 'random_static_image':
-                backbone, feature_size = get_backbone(architecture_name=wrapper_config.backbone_static,
+                backbone, feature_size_static = get_backbone(architecture_name=wrapper_config.backbone_static,
                                                       pretrained=wrapper_config.pretrained,
                                                       get_feature_size=True)
                 
@@ -46,24 +46,49 @@ class MultiModalWrapper(SimpleClassifierWrapper):
     def forward(self, x):
         B, C, W, H = x[self.input_modalities[0]].size()
         device = x[self.input_modalities[0]].device
-        M = len(self.input_modalities)
-        features = torch.empty((B, M, self.backbone_feature_size)).to(device)
+        M = len(self.input_modalities)  # Number of modalities
+        
+        # Initialize an empty list to store features from each modality
+        modality_features = []
 
         for idx, key in enumerate(self.input_modalities):
-            features[:, idx, :] = getattr(self, 'backbone_' + key)(x[key])
-        features = features.view((B, M, -1))
+            # Get features from each modality's backbone
+            feature_output = getattr(self, 'backbone_' + key)(x[key])
+
+            # If the feature size is 512, reshape it from [B, 512] to [B, 2, 256]
+            if feature_output.size(1) == 512:
+                feature_output = feature_output.view(B, 2, 256)
+                modality_features.append(feature_output)  # Add [B, 2, 256] to the list
+            else:
+                # If feature size is 256, add as [B, 1, 256]
+                modality_features.append(feature_output.unsqueeze(1))
+
+        # Concatenate all modality features along the second dimension
+        features = torch.cat(modality_features, dim=1)  # Result: [B, 5, 256]
+        print(f"Concatenated features size: {features.size()}")  # Should print: [B, 5, 256]
+
+        # Apply pooling operations
         features1 = self.pooling(features)
         features2 = self.pooling2(features)
         features3 = self.pooling3(-features)
+        
+        # Concatenate pooled features across the last dimension
         features = torch.cat([features1, features2, features3], axis=2)
         features = features.squeeze()
+        
+        # Classification
         output = self.classifier(features)
         sigmoid_output = torch.sigmoid(output)
+    
         if isinstance(self.loss, nn.modules.loss.CrossEntropyLoss):
             x['target'] = x['target'].squeeze()
 
-        output_dict = {'output': sigmoid_output.detach().cpu().numpy(),
-                       'target': x['target'].detach().cpu().numpy()}
+        output_dict = {
+            'output': sigmoid_output.detach().cpu().numpy(),
+            'target': x['target'].detach().cpu().numpy()
+        }
+        
+        # Add any additional metadata if available
         for k, v in x.items():
             if k not in ['data', 'target'] + self.input_modalities:
                 output_dict[k] = v
@@ -72,7 +97,9 @@ class MultiModalWrapper(SimpleClassifierWrapper):
         return output_dict, loss
 
 
+
 if __name__ == '__main__':
     print("Experiment on Multi_Modal_Wrapper!!!")
     model = MultiModalWrapper()
+    torch.Tensor().size()
     print(model)
