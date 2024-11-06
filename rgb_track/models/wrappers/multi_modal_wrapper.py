@@ -65,7 +65,7 @@ class MultiModalWrapper(SimpleClassifierWrapper):
 
         # Concatenate all modality features along the second dimension
         features = torch.cat(modality_features, dim=1)  # Result: [B, 5, 256]
-        print(f"Concatenated features size: {features.size()}")  # Should print: [B, 5, 256]
+        #print(f"Concatenated features size: {features.size()}")  # Should print: [B, 5, 256]
 
         # Apply pooling operations
         features1 = self.pooling(features)
