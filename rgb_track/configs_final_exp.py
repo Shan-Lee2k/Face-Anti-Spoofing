@@ -8,13 +8,13 @@ from at_learner_core.utils import transforms as transforms
 
 from at_learner_core.utils import joint_transforms as j_transforms
 from at_learner_core.utils import sequence_transforms as s_transforms
-from PIL import Image
+
 
 pretrained_weights_dict = {
     'ImageNet_V2_Large': "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_large-5c1a4163.pth",
     'ImageNet_V1_Small':  "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_small-047dcff4.pth",
 }
-
+NUM_K = 1
 L = 16
 image_size = 112
 modality_list = ['stat_r1000', 'stat_r1']
@@ -26,9 +26,9 @@ test_seq_transform = tv.transforms.Compose([
 ])
 
 train_seq_transform = tv.transforms.Compose([
-    #tv.transforms.RandomApply([
-    #    s_transforms.DuplicateElements(1, False, ['data'], 'target', 1, True)
-    #], p=0.5),
+    tv.transforms.RandomApply([
+        s_transforms.DuplicateElements(1, False, ['data'], 'target', 1, True)
+    ], p=0.5),
     s_transforms.LinspaceTransform(L, key_list=['data'], max_start_index=0),
 ])
 
@@ -43,6 +43,7 @@ postprocess_transform = tv.transforms.Compose([
     transforms.CreateNewItem(transforms.RankPooling(C=1), 'data', 'stat_r1'),
 
     transforms.DeleteKeys(['data']),
+    transforms.DeleteKeys(['key_frame']),
 
     transforms.Transform4EachKey([
         transforms.Transform4EachElement([
@@ -88,9 +89,9 @@ train_image_transform = tv.transforms.Compose([
         
         #tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
     ], key_list=['data']),
-
+    transforms.CreateNewItem(transforms.KMeanKeyFrame(NUM_K), 'data', 'key_frame'),
     # Create static modality
-    transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
+    transforms.CreateNewItem(transforms.StaticImageTransform(NUM_K), 'key_frame', 'random_static_image'),
     
     transforms.Transform4EachKey([
         tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
@@ -133,6 +134,7 @@ test_image_transform = tv.transforms.Compose([
     
     # Create static modality
     transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
+    transforms.CreateNewItem(transforms.KMeanKeyFrame(1), 'data', 'key_frame'),
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, L-1), 'data', 'optical_flow'),
     #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'data', 'optical_flow_start'),
 
