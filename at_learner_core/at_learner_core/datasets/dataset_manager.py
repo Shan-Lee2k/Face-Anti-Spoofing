@@ -64,15 +64,15 @@ class DatasetManager(object):
         t1=time.time()
         dataset = DatasetManager._get_dataset(dataset_config)
         t2=time.time()
-        ex_time = (t2 - t1)/60
-        print(f"Initialize and Transform dataset in {ex_time:.2f} minutes")
+        ex_time = t2 - t1
+        print(f"Initialize and Transform dataset in {ex_time:.2f} s")
         if hasattr(dataset_config, 'sampler_config'):
             t1=time.time()
             sampler = DatasetManager._get_sampler(dataset_config.sampler_config, dataset)
             shuffle = False
             t2=time.time()
-            ex_time = (t2 - t1)/60
-            print(f"Sampling dataset in {ex_time:.2f} minutes")
+            ex_time = t2 - t1
+            print(f"Sampling dataset in {ex_time:.2f} s")
         else:
             sampler = None
         t1=time.time()
@@ -83,8 +83,8 @@ class DatasetManager(object):
                                                   sampler=sampler,
                                                   collate_fn= None) # List samples from __getitem__
         t2=time.time()
-        ex_time = (t2 - t1)/60
-        print(f"Initialize dataloader in {ex_time:.2f} minutes")
+        ex_time = t2 - t1
+        print(f"Initialize dataloader in {ex_time:.2f} s")
         return data_loader
 
     @staticmethod
