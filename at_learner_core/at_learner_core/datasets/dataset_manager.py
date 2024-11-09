@@ -4,7 +4,7 @@ from .imagelist_dataset import ImageListDataset
 from .df2dict_dataset import Df2DictDataset
 from .casia_video_dataset import VideoDataset
 from .casia_frame_dataset import FrameDataset
-
+import time
 
 class DatasetManager(object):
     def __init__(self):
@@ -61,17 +61,30 @@ class DatasetManager(object):
 
     @staticmethod
     def get_dataloader(dataset_config, train_process_config, shuffle=True):
+        t1=time.time()
         dataset = DatasetManager._get_dataset(dataset_config)
+        t2=time.time()
+        ex_time = (t2 - t1)/60
+        print(f"Initialize and Transform dataset in {ex_time:.2f} minutes")
         if hasattr(dataset_config, 'sampler_config'):
+            t1=time.time()
             sampler = DatasetManager._get_sampler(dataset_config.sampler_config, dataset)
             shuffle = False
+            t2=time.time()
+            ex_time = (t2 - t1)/60
+            print(f"Sampling dataset in {ex_time:.2f} minutes")
         else:
             sampler = None
+        t1=time.time()
         data_loader = torch.utils.data.DataLoader(dataset,
                                                   batch_size=train_process_config.batchsize,
                                                   shuffle=shuffle,
                                                   num_workers=train_process_config.nthreads,
-                                                  sampler=sampler)
+                                                  sampler=sampler,
+                                                  collate_fn= None) # List samples from __getitem__
+        t2=time.time()
+        ex_time = (t2 - t1)/60
+        print(f"Initialize dataloader in {ex_time:.2f} minutes")
         return data_loader
 
     @staticmethod
