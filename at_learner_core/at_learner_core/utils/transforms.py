@@ -70,7 +70,7 @@ class KMeanKeyFrame(object):
             
             # Check if a warning was raised
             if any("invalid value encountered in true_divide" in str(warning.message) for warning in w):
-                print("Choose first frame for print attack")
+                #print("Choose first frame for print attack")
                 return [images[0]]
         #print(f"Frames shape after PCA: {frames_2dim.shape}")
         # Create a K-Means clustering model
