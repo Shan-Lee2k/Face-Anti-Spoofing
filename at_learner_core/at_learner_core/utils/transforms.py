@@ -4,11 +4,12 @@ from PIL import Image, ImageFilter, ImageOps
 import numpy as np
 import cv2
 import torch
-
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
 import scipy.sparse
 from sklearn import svm
 from .pyflow import pyflow
-
+import warnings
 from torchvision.transforms import functional as F
 
 class CreateNewItem(object):
@@ -36,12 +37,65 @@ class StaticImageTransform(object):
     def __call__(self, images):
         if type(self.index_range) != int:
             TypeError("Please type integer !!!")
+        if len(images) == 1: return images[0]
         else:
             index_image = np.random.randint(0, self.index_range)
             #index_image = 0
         static_img = images[index_image]
         return static_img
+
+class KMeanKeyFrame(object):
+    """
+    Return k frames images (PIL)
+    """
+    def __init__(self,k):
+        self.k = k
+    def __call__(self,images):
+        grayscale_arrays = [np.array(img.convert('L')) for img in images]
+        stacked_array = np.stack(grayscale_arrays, axis=0)
+        #print(f"Shape input for KMeans: {stacked_array.shape}")
+        # Then decompose the frames into 2 components. The 2 component decomposition is mostly
+        # for visualization purposes. In reality, more components can be used
+
+        # To do this, first reshape the frames into an (n, m) shape
+        # n - frame count
+        # m - # of pixels
+        #print("Flattening...")
+        np_images_flattened = stacked_array.reshape(stacked_array.shape[0], -1)
+        #print("Decomposing...")
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            pca = PCA(n_components=2)
+            frames_2dim = pca.fit_transform(np_images_flattened)
+            
+            # Check if a warning was raised
+            if any("invalid value encountered in true_divide" in str(warning.message) for warning in w):
+                print("Choose first frame for print attack")
+                return [images[0]]
+        #print(f"Frames shape after PCA: {frames_2dim.shape}")
+        # Create a K-Means clustering model
+        num_cluster = self.k
+        kmeans = KMeans(n_clusters= num_cluster, random_state=0).fit(frames_2dim)
+        # Get the cluster labels for each frame
+        labels = kmeans.labels_
+        centroid_positions = kmeans.cluster_centers_
+        # Select keyframes as the closest frames to the cluster centroids
+        keyframe_indices = []
+        for i in range(num_cluster):
+            cluster_indices = np.where(labels == i)[0]
+            closest_frame_index = cluster_indices[np.argmin(np.linalg.norm(frames_2dim[cluster_indices] - kmeans.cluster_centers_[i], axis=1))]
+            keyframe_indices.append(closest_frame_index)
+        keyframe_indices = sorted(keyframe_indices)
+        print(f'Num of keys {num_cluster}')
+        print(keyframe_indices)
+        # Extract the keyframes from the original frames
+        #keyframes = np_images[keyframe_indices]
+        # Convert into List[PIL]
+        return [images[idx] for idx in keyframe_indices] # List PIL
         
+                
+
+      
 class RandomZoom(object):
     def __init__(self, size):
         self.size_min = size[0]
