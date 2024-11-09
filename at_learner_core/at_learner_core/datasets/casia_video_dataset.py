@@ -34,7 +34,7 @@ class VideoDataset(torch.utils.data.Dataset):
             subdf = self.df[self.df[self.group_column] == group_id]
             self.df.loc[subdf.index.values, 'batch_idx'] = batch_idx
 
-    def __getitem__(self, index):
+    def __getitem__(self, index): #Handle each video_id
         item_dict = OrderedDict()
         video_subdf = self.df[self.df.batch_idx == index]
 
@@ -46,20 +46,23 @@ class VideoDataset(torch.utils.data.Dataset):
 
         for column, column_name in self.target_columns:
             item_dict[column_name] = video_subdf[column].iloc[0]
-
-        if self.seq_transforms is not None:
+            
+        item_dict['video_id'] = str(video_subdf[self.group_column].iloc[0])
+        
+        if self.seq_transforms is not None: # Out: 16 sequence frame and p=0.5 duplicated
             item_dict = self.seq_transforms(item_dict)
-
+        # Convert item_dict['data'] path -> image data
         for _, column_name in self.data_columns:
-            item_dict[column_name] = [rgb_loader(x) for x in item_dict[column_name]]
-
+            item_dict[column_name] = [rgb_loader(x) for x in item_dict[column_name]] 
+        
         for _, column_name in self.target_columns:
             item_dict[column_name] = torch.Tensor([item_dict[column_name]])
-
-        if self.transforms is not None:
+       
+        # Transform and create 4 modal key from "data" -> odict_keys(['target', 'random_static_image', 'optical_flow', 'stat_r1000', 'stat_r1'])
+        if self.transforms is not None: 
             item_dict = self.transforms(item_dict)
-
-        item_dict['video_id'] = str(video_subdf[self.group_column].iloc[0])
+        # If random_static_image > 1 image, create multi samples
+        
 
         return item_dict
 
