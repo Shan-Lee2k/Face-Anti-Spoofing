@@ -43,7 +43,7 @@ postprocess_transform = tv.transforms.Compose([
     transforms.CreateNewItem(transforms.RankPooling(C=1), 'data', 'stat_r1'),
 
     transforms.DeleteKeys(['data']),
-    transforms.DeleteKeys(['key_frame']),
+    #transforms.DeleteKeys(['key_frame']),
 
     transforms.Transform4EachKey([
         transforms.Transform4EachElement([
