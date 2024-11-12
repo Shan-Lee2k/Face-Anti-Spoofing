@@ -16,12 +16,12 @@ def get_backbone(architecture_name,
         from .mobilenetv3_custom import MobileNetV3_Custom
         mode_large = 'large'
         mode_small = 'small'
-        out_feature = 256 #256 Change feature size here
-        model = MobileNetV3_Custom(pretrained=pretrained, mode = mode_small, out_feature= out_feature, drop_rate=0.3) #small
+        out_feature = 512 #256 Change feature size here
+        model = MobileNetV3_Custom(pretrained=pretrained, mode = mode_large, out_feature= out_feature, drop_rate=0.2) #small
         if pretrained is None:
-            print(f"Changed backbone of static method: MobilenetV3_{mode_small} --- (NO PRE-TRAINED)")
+            print(f"Changed backbone of static method: MobilenetV3_{mode_large} --- (NO PRE-TRAINED)")
         else:
-            print(f"Changed backbone of static method: MobilenetV3_{mode_small}--- (PRE-TRAINED)")
+            print(f"Changed backbone of static method: MobilenetV3_{mode_large}--- (PRE-TRAINED)")
         #feature_size = 1280
         #feature_size = 256
         feature_size = out_feature
