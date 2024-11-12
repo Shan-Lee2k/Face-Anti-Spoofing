@@ -73,7 +73,7 @@ class MobileNetV3_Custom(nn.Module):
                 self.load_state_dict(new_dict, strict= False)
             else: self.load_state_dict(pretrained_weights,strict=False)
             # Freeze all feature extractor parameters
-            for param in self.features.parameters():
+            for param in list(self.features.parameters())[:-16]:
                 param.requires_grad = False  # Freeze all parameters
         
         # Define a new ConvBNActivation layer with desired output of 256
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     #print(pre_state_dict['features.0.0.weight'])
     #print(pre_state_dict['state_dict']['features.0.0.weight'])
     #print(len(pre_state_dict['state_dict']))
-    model = MobileNetV3_Custom(pretrained= pretrained_weights_dict['MN3_CelebA'],mode='large',out_feature= 512)
+    model = MobileNetV3_Custom(pretrained= pretrained_weights_dict['ImageNet_V1_Small'],mode='small',out_feature= 512)
     model_mb3 = torchvision.models.mobilenet_v3_large()
     #print(list(model_mb3.state_dict().keys()))
     #print(state_dict.keys())
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     # model_mb3.load_state_dict(new_dict,strict=False)
     # print(model.state_dict()['features.15.block.3.1.weight'] == state_dict['features.15.conv.8.weight'])
     check_frozen_layers(model)
-    print(model.eval())       
+    #print(model.eval())       
         
         
     
