@@ -89,9 +89,9 @@ train_image_transform = tv.transforms.Compose([
         
         #tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
     ], key_list=['data']),
-    transforms.CreateNewItem(transforms.KMeanKeyFrame(NUM_K), 'data', 'key_frame'),
+    #transforms.CreateNewItem(transforms.KMeanKeyFrame(NUM_K), 'data', 'key_frame'),
     # Create static modality
-    transforms.CreateNewItem(transforms.StaticImageTransform(NUM_K), 'key_frame', 'random_static_image'),
+    transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
     
     transforms.Transform4EachKey([
         tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
@@ -134,7 +134,7 @@ test_image_transform = tv.transforms.Compose([
     
     # Create static modality
     transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
-    transforms.CreateNewItem(transforms.KMeanKeyFrame(1), 'data', 'key_frame'),
+    #transforms.CreateNewItem(transforms.KMeanKeyFrame(1), 'data', 'key_frame'),
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, L-1), 'data', 'optical_flow'),
     #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'data', 'optical_flow_start'),
 
