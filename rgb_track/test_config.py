@@ -5,7 +5,7 @@ import torchvision as tv
 from at_learner_core.configs import dict_to_namespace
 from at_learner_core.utils import sequence_transforms as s_transforms
 
-def get_config(protocol_name):
+def get_config(protocol_name, THR = 0.5):
     test_config = {
         'test_config_name': protocol_name,
         'out_path': None,
@@ -25,7 +25,7 @@ def get_config(protocol_name):
                     'target_column': 'target'
                 }
             },
-            'nthreads': os.cpu_count(),
+            'nthreads': 8,
             'batch_size': 64,
         },
 
@@ -38,6 +38,7 @@ def get_config(protocol_name):
                  },
                  },
                 {'logger_type': 'test_terminal',
+                 'THR': THR,
                  'show_metrics': {
                      'name': 'acer',
                  },
@@ -57,9 +58,13 @@ if __name__ == '__main__':
                         type=str,
                         default='experiment_tests/',
                         help='Path to save options')
+    parser.add_argument('--thr',
+                   type= float,
+                   default= 0.5,
+                   help='Threshold for testing')
     args = parser.parse_args()
     for idx in range(1, 4):
-        configs = get_config(f'protocol_4_{idx}')
+        configs = get_config(f'protocol_4_{idx}',args.thr)
         out_path = os.path.join(args.savepath,
                                 configs.test_config_name)
         os.makedirs(out_path, exist_ok=True)
