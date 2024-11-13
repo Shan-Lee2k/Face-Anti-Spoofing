@@ -6,6 +6,43 @@ from .casia_video_dataset import VideoDataset
 from .casia_frame_dataset import FrameDataset
 import time
 
+def custom_collate_fn(batch):
+    """
+    Custom collate function to handle variable sample sizes in a batch.
+    
+    Parameters:
+    - batch: list of lists, where each sublist contains either 5 or 1 item_dict
+    
+    Returns:
+    - batched_dict: dictionary where each key has a batch of stacked items, maintaining batch_size.
+    """
+    # Initialize lists for each key in item_dicts to store batched data
+    batched_dict = {key: [] for key in batch[0][0].keys()}
+    
+    cumulative_samples = 0
+    batch_size = 32  # Define your target batch size
+    
+    for item_list in batch:
+        sample_count = len(item_list)
+        
+        # Stop adding samples if cumulative_samples reaches batch_size
+        if cumulative_samples + sample_count > batch_size:
+            break
+        
+        # Append items to the batched_dict keys
+        for item_dict in item_list:
+            for key, value in item_dict.items():
+                batched_dict[key].append(value)
+        
+        cumulative_samples += sample_count
+
+    # Stack the lists into tensors if needed, adjust per your requirement
+    for key, values in batched_dict.items():
+        batched_dict[key] = torch.stack(values) if isinstance(values[0], torch.Tensor) else values
+    
+    return batched_dict
+
+
 class DatasetManager(object):
     def __init__(self):
         pass
@@ -81,7 +118,7 @@ class DatasetManager(object):
                                                   shuffle=shuffle,
                                                   num_workers=train_process_config.nthreads,
                                                   sampler=sampler,
-                                                  collate_fn= None) # List samples from __getitem__
+                                                  collate_fn= custom_collate_fn) # List samples from __getitem__
         t2=time.time()
         ex_time = t2 - t1
         print(f"Initialize dataloader in {ex_time:.2f} s")
