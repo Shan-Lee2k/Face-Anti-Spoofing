@@ -26,6 +26,7 @@ class VideoDataset(torch.utils.data.Dataset):
         self.transforms = transforms
         self.seq_transforms = self.datalist_config.sequence_transforms
         self.df = self._read_list()
+        self.multi = self.datalist_config.multi_static
         self._init_groups()
 
     def _init_groups(self):
@@ -62,10 +63,19 @@ class VideoDataset(torch.utils.data.Dataset):
         if self.transforms is not None: 
             item_dict = self.transforms(item_dict)
         # If random_static_image > 1 image, create multi samples
-        
+        # Handling multiple static images by creating multiple samples
+        if self.multi:
+            
+            static_images = item_dict['random_static_image']  # Expected to be a list of static images
+            samples = []
 
+            for static_img in static_images:
+                sample = OrderedDict(item_dict)  
+                sample['random_static_image'] = static_img
+                samples.append(sample)
+
+            return samples
         return item_dict
-
     def __len__(self):
         return len(self.df[self.group_column].unique())
 
