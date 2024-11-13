@@ -76,6 +76,7 @@ class MobileNetV3_Custom(nn.Module):
             for param in list(self.features.parameters())[:-16]:
                 param.requires_grad = False  # Freeze all parameters
         
+        self.dropout1 = nn.Dropout(p=self.drop_out_rate)
         # Define a new ConvBNActivation layer with desired output of 256
         self.custom_layer = ConvBNActivation(
             in_channels = last_channel[self.mode],
@@ -84,15 +85,15 @@ class MobileNetV3_Custom(nn.Module):
             activation_layer=nn.Hardswish  # Hardswish activation
         )
 
-        self.dropout = nn.Dropout(p=self.drop_out_rate)
+        self.dropout2 = nn.Dropout(p=self.drop_out_rate)
 
     def forward(self, x):
         # Pass input through the base MobileNetV3 layers
         x = self.features(x)
-        
+        x = self.dropout1(x)
         # Pass through the custom layer
         x = self.custom_layer(x)
-        x = self.dropout(x)
+        x = self.dropout2(x)
         x = nn.functional.adaptive_avg_pool2d(x, (1,1))
         x = x.view(-1, self.feature_size)
         #x = self.classifier(x)
@@ -108,8 +109,8 @@ if __name__ == '__main__':
     #print(pre_state_dict['features.0.0.weight'])
     #print(pre_state_dict['state_dict']['features.0.0.weight'])
     #print(len(pre_state_dict['state_dict']))
-    model = MobileNetV3_Custom(pretrained= pretrained_weights_dict['ImageNet_V1_Small'],mode='small',out_feature= 512)
-    model_mb3 = torchvision.models.mobilenet_v3_large()
+    model = MobileNetV3_Custom(pretrained= pretrained_weights_dict['ImageNet_V1_Small'],mode='small',out_feature= 256)
+    model_mb3 = torchvision.models.mobilenet_v3_small()
     #print(list(model_mb3.state_dict().keys()))
     #print(state_dict.keys())
     #print(list(model.features.parameters())[:20])
@@ -128,7 +129,7 @@ if __name__ == '__main__':
     # model_mb3.load_state_dict(new_dict,strict=False)
     # print(model.state_dict()['features.15.block.3.1.weight'] == state_dict['features.15.conv.8.weight'])
     check_frozen_layers(model)
-    #print(model.eval())       
+    #print(model_mb3.eval())       
         
         
     
