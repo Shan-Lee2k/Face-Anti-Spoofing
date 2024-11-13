@@ -30,6 +30,18 @@ class CreateNewItem(object):
         format_string += str(self.key) + ', ' + str(self.new_key)
         format_string += ')'
         return format_string
+
+class ProcessImageList:
+    """Applies a set of transformations to each image in a list."""
+    def __init__(self, transform):
+        self.transform = transform
+
+    def __call__(self, images):
+        if isinstance(images, list):  # Apply the transform to each image in the list
+            return [self.transform(img) if isinstance(img, Image.Image) else img for img in images]
+        return self.transform(images)  # Apply directly if it's not a list
+
+
 # Static Modality
 class StaticImageTransform(object):
     def __init__(self, index_range):
