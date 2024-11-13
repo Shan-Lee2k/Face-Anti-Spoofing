@@ -4,8 +4,24 @@ from models.wrappers.rgb_transformer_wrapper import RGBVideoWrapper
 from models.wrappers.multi_modal_wrapper import MultiModalWrapper
 from models.wrappers.sdnet_wrapper import SDNetWrapper
 from models.wrappers.dlas_wrapper import DLASWrapper
+import torch
+import torchvision
+import matplotlib.pyplot as plt
+import numpy as np
+
+from torch.utils.tensorboard import SummaryWriter
 
 from at_learner_core.datasets.dataset_manager import DatasetManager
+
+def matplotlib_imshow(img, one_channel=False):
+    if one_channel:
+        img = img.mean(dim=0)
+    img = img / 2 + 0.5     # unnormalize
+    npimg = img.numpy()
+    if one_channel:
+        plt.imshow(npimg, cmap="Greys")
+    else:
+        plt.imshow(np.transpose(npimg, (1, 2, 0)))
 
 
 class RGBRunner(Runner):
@@ -46,3 +62,95 @@ class RGBRunner(Runner):
         self.val_loader = DatasetManager.get_dataloader(self.config.datalist_config.testlist_configs,
                                                         self.config.train_process_config,
                                                         shuffle=False)
+if __name__  == '__main__':
+    torch.set_printoptions(edgeitems=1000)
+    writer = SummaryWriter('runs/FAS_experiment_1')
+    exp1 = "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/rgb_track/experiments/rgb_track/exp1_protocol_4_1/rgb_track_exp1_protocol_4_1.config"
+    exp1_test = "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/rgb_track/experiment_tests/protocol_4_1/protocol_4_1.config"
+    config = torch.load(exp1)
+    config_test = torch.load(exp1_test) 
+    #print(config)
+    #dataset = DatasetManager._get_dataset(config.datalist_config.trainlist_config)
+    train_loader = DatasetManager.get_dataloader(config.datalist_config.trainlist_config, config.train_process_config)
+    
+    #test_set = DatasetManager._get_dataset(config.datalist_config.testlist_configs)
+    # test_loader = DatasetManager.get_dataloader(config.datalist_config.testlist_configs,
+    #                                                     config.train_process_config,
+    #                                                     shuffle=True)
+    
+    
+    # get some random training images
+    dataiter = iter(train_loader)
+    data = next(dataiter)
+    target, optical_flow, random_static_image, stat_r1000, stat_r1, video_id = data['target'], data['optical_flow'], data['random_static_image'], data['stat_r1000'], data['stat_r1'], data['video_id']
+    images =  [stat_r1000, stat_r1]
+    ran_op = [random_static_image, optical_flow]
+    
+    print(optical_flow.size())
+    print(random_static_image.size())
+    print(stat_r1000.size())
+    print(stat_r1.size())
+    print(random_static_image[0])
+    print('STATIC')
+    # for i in range(8):
+    #     image = random_static_image[i]
+    #     plt.imshow(image.permute(1,2,0))
+    #     plt.title(video_id[i])
+    #     plt.show()
+    # print('RANK POOLING 1000')
+    # # RANK POOLING
+    # for i in range(8):
+    #     image = stat_r1000[i]
+    #     plt.imshow(image.permute(1,2,0))
+    #     plt.title(video_id[i])
+    #     plt.show()
+        
+    # print('RANK POOLING 1')
+    # # RANK POOLING
+    # for i in range(8):
+    #     image = stat_r1[i]
+    #     plt.imshow(image.permute(1,2,0))
+    #     plt.title(video_id[i])
+    #     plt.show()
+    # print('OPTICAL FLOW')
+    # # OPTICAL FLOW    
+    for i in range(16):
+        static = random_static_image[i]
+        rank_1 = stat_r1[i]
+        rank_1000  =  stat_r1000[i]
+        #optical_flow = optical_flow[i]
+        # Denormalize:
+        for img in [rank_1,rank_1000,optical_flow]:
+            img = img / 2 + 0.5
+        
+        #x_flow = optical_flow[0]
+        #y_flow = optical_flow[1]
+        #print(f"X.shape: {x_flow.size()} ")
+        #print(f"Y.shape: {y_flow.size()} ")
+        
+        plt.figure(figsize=(10, 5))
+
+        plt.subplot(1, 3, 1)
+        plt.imshow(static.permute(1,2,0))
+        plt.title(f'Static image\n {video_id[i]}')
+
+        plt.subplot(1, 3, 2)
+        plt.imshow(rank_1.permute(1,2,0))
+        plt.title(f'Rank Pooling C=1 \n {video_id[i]}')
+        
+        plt.subplot(1, 3, 3)
+        plt.imshow(rank_1000.permute(1,2,0))
+        plt.title(f'Rank Pooling C=1000 \n {video_id[i]}')
+        
+        # plt.subplot(1, 5, 4)
+        # plt.imshow(x_flow, cmap = 'gray')
+        
+        # plt.title(f'Optical flow X \n {video_id[i]}')
+        
+        # plt.subplot(1, 5, 5)
+        # plt.imshow(y_flow, cmap = 'gray')
+
+        # plt.title(f'Optical flow Y \n {video_id[i]}')
+        
+
+        plt.show()
