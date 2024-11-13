@@ -43,7 +43,7 @@ postprocess_transform = tv.transforms.Compose([
     transforms.CreateNewItem(transforms.RankPooling(C=1), 'data', 'stat_r1'),
 
     transforms.DeleteKeys(['data']),
-    #transforms.DeleteKeys(['key_frame']),
+    transforms.DeleteKeys(['key_frame']),
 
     transforms.Transform4EachKey([
         transforms.Transform4EachElement([
@@ -60,6 +60,19 @@ postprocess_transform = tv.transforms.Compose([
         tv.transforms.Normalize(mean=[0.5], std=[0.5])],
         key_list=modality_list),
     
+    # TRANSFORM FOR MULTI STATIC IMAGE KMEANS
+    
+    transforms.Transform4EachKey([
+        transforms.ProcessImageList(tv.transforms.Compose([
+            tv.transforms.Resize(256),
+            tv.transforms.CenterCrop(224),
+            tv.transforms.ToTensor(),
+            tv.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ]))
+    ], key_list=static_modality),
+    
+    
+    
     # transforms.Transform4EachKey([
     #     tv.transforms.Resize(image_size),
     #     tv.transforms.ToTensor(),
@@ -69,15 +82,17 @@ postprocess_transform = tv.transforms.Compose([
     #     ,key_list=static_modality),
     
     
-    # TRANSFORM FOR MOBILENETV3
-    transforms.Transform4EachKey([
-        tv.transforms.Resize(256),
-        tv.transforms.CenterCrop(224),
-        tv.transforms.ToTensor(),
-        tv.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
+    # TRANSFORM FOR SINGLE STATIC IMAGE
+    
+    
+    # transforms.Transform4EachKey([
+    #     tv.transforms.Resize(256),
+    #     tv.transforms.CenterCrop(224),
+    #     tv.transforms.ToTensor(),
+    #     tv.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
 
-        #,
-        ,key_list=static_modality),
+    #     #,
+    #     ,key_list=static_modality),
     
     
     
@@ -89,9 +104,9 @@ train_image_transform = tv.transforms.Compose([
         
         #tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
     ], key_list=['data']),
-    #transforms.CreateNewItem(transforms.KMeanKeyFrame(NUM_K), 'data', 'key_frame'),
+    transforms.CreateNewItem(transforms.KMeanKeyFrame(NUM_K), 'data', 'key_frame'),
     # Create static modality
-    transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
+    transforms.CreateNewItem(transforms.StaticImageTransform(NUM_K), 'key_frame', 'random_static_image'),
     
     transforms.Transform4EachKey([
         tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
@@ -134,7 +149,7 @@ test_image_transform = tv.transforms.Compose([
     
     # Create static modality
     transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
-    #transforms.CreateNewItem(transforms.KMeanKeyFrame(1), 'data', 'key_frame'),
+    transforms.CreateNewItem(transforms.KMeanKeyFrame(1), 'data', 'key_frame'),
     transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, L-1), 'data', 'optical_flow'),
     #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'data', 'optical_flow_start'),
 
@@ -161,6 +176,7 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, ne
                 'data_columns': [('rgb_path', 'data')],
                 'target_columns': ('label', 'target'),
                 'group_column': 'video_id',
+                'multi_static': 'Yes',
                 'sampler_config': {
                     'name': 'NumElements',
                     'class_column': 'label',
@@ -176,6 +192,7 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, ne
                 'data_columns': [('rgb_path', 'data')],
                 'target_columns': ('label', 'target'),
                 'group_column': 'video_id',
+                'multi_static': None,
                 'sequence_transforms': test_seq_transform,
                 'transforms': test_image_transform,
             }
@@ -215,10 +232,10 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, ne
         },
         'logger_config': {
             'logger_type': 'log_combiner',
-            'THR': THR,
             'loggers': [
                 {'logger_type': 'terminal',
                  'log_batch_interval': 5,
+                 'THR': THR,
                  'show_metrics': {
                      'name': 'acer',
                      'fpr': 0.01,
