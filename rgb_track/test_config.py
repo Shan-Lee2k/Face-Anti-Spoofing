@@ -19,6 +19,7 @@ def get_config(protocol_name, THR = 0.5):
             'group_column': 'video_id',
             'protocol_name': protocol_name,
             'seq_transform_source': 'model_config',
+            'multi_static': None,
             'test_process_config': {
                 'metric': {
                     'name': 'acer',
