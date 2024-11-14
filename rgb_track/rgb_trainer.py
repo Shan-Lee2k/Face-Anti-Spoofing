@@ -73,6 +73,17 @@ if __name__  == '__main__':
     #dataset = DatasetManager._get_dataset(config.datalist_config.trainlist_config)
     train_loader = DatasetManager.get_dataloader(config.datalist_config.trainlist_config, config.train_process_config)
     
+    dataset_config = config_test.dataset_configs
+    if dataset_config.transform_source == 'model_config':
+        transforms = config.datalist_config.testlist_configs.transforms
+        setattr(dataset_config, 'transforms', transforms)    
+
+    if dataset_config.seq_transform_source == 'model_config':
+        seq_transforms = config.datalist_config.testlist_configs.sequence_transforms
+        setattr(dataset_config, 'sequence_transforms', seq_transforms)
+
+    test_dataset = DatasetManager._get_dataset(config_test.dataset_configs)
+    test_loader = DatasetManager.get_dataloader_by_args(dataset=test_dataset,batch_size=16,num_workers=4)
     #test_set = DatasetManager._get_dataset(config.datalist_config.testlist_configs)
     # test_loader = DatasetManager.get_dataloader(config.datalist_config.testlist_configs,
     #                                                     config.train_process_config,
@@ -80,7 +91,7 @@ if __name__  == '__main__':
     
     
     # get some random training images
-    dataiter = iter(train_loader)
+    dataiter = iter(test_loader)
     data = next(dataiter)
     target, optical_flow, random_static_image, stat_r1000, stat_r1, video_id = data['target'], data['optical_flow'], data['random_static_image'], data['stat_r1000'], data['stat_r1'], data['video_id']
     images =  [stat_r1000, stat_r1]
