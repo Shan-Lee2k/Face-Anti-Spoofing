@@ -44,17 +44,23 @@ class ProcessImageList:
 
 # Static Modality
 class StaticImageTransform(object):
-    def __init__(self, index_range):
+    def __init__(self, index_range, mode = 'one' or 'multi'):
         self.index_range = index_range # int
+        self.mode = mode
     def __call__(self, images):
         if type(self.index_range) != int:
             TypeError("Please type integer !!!")
-        if len(images) == 1: return [images[0]]
-        else: return images
-        #     index_image = np.random.randint(0, self.index_range)
-        #     #index_image = 0
-        # static_img = images[index_image]
-        # return static_img
+        if self.mode == 'multi':
+            if len(images) == 1: return [images[0]]
+            else: return images
+        elif self.mode == 'one': #Random from ['data']  or ['key_frame]
+            # If K=1 
+            if len(images) == 1: return images[0]
+            else:
+                index_image = np.random.randint(0, self.index_range)
+                #index_image = 0
+                static_img = images[index_image]
+                return static_img
 
 class KMeanKeyFrame(object):
     """
