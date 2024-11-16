@@ -97,7 +97,7 @@ class DatasetManager(object):
         return sampler
 
     @staticmethod
-    def get_dataloader(dataset_config, train_process_config, shuffle=True):
+    def get_dataloader(dataset_config, train_process_config, shuffle=True, custom_data = None):
         t1=time.time()
         dataset = DatasetManager._get_dataset(dataset_config)
         t2=time.time()
@@ -118,7 +118,7 @@ class DatasetManager(object):
                                                   shuffle=shuffle,
                                                   num_workers=train_process_config.nthreads,
                                                   sampler=sampler,
-                                                  collate_fn= custom_collate_fn) # List samples from __getitem__
+                                                  collate_fn= custom_data) # List samples from __getitem__
         t2=time.time()
         ex_time = t2 - t1
         print(f"Initialize dataloader in {ex_time:.2f} s")
