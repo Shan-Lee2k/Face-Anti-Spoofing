@@ -26,7 +26,7 @@ def get_config(protocol_name, THR = 0.5):
                     'target_column': 'target'
                 }
             },
-            'nthreads': 8,
+            'nthreads': os.cpu_count(),
             'batch_size': 64,
         },
 
