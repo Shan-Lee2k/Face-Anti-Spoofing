@@ -76,7 +76,7 @@ class MobileNetV3_Custom(nn.Module):
             for param in list(self.features.parameters())[:-16]:
                 param.requires_grad = False  # Freeze all parameters
         
-        self.dropout1 = nn.Dropout(p=self.drop_out_rate)
+        #self.dropout1 = nn.Dropout(p=self.drop_out_rate)
         # Define a new ConvBNActivation layer with desired output of 256
         self.custom_layer = ConvBNActivation(
             in_channels = last_channel[self.mode],
@@ -90,7 +90,7 @@ class MobileNetV3_Custom(nn.Module):
     def forward(self, x):
         # Pass input through the base MobileNetV3 layers
         x = self.features(x)
-        x = self.dropout1(x)
+        #x = self.dropout1(x)
         # Pass through the custom layer
         x = self.custom_layer(x)
         x = self.dropout2(x)
