@@ -157,20 +157,7 @@ test_image_transform = tv.transforms.Compose([
     
     postprocess_transform
 ])
-test_image_transform = tv.transforms.Compose([
-    transforms.Transform4EachKey([
-        preprocess_transform,
-    ], key_list=['data']),
-    
-    # Create static modality
-    #transforms.CreateNewItem(transforms.KMeanKeyFrame(1), 'data', 'key_frame'),
-    transforms.CreateNewItem(transforms.StaticImageTransform(L), 'data', 'random_static_image'),
-    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, L-1), 'data', 'optical_flow'),
-    #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'data', 'optical_flow_start'),
 
-    
-    postprocess_transform
-])
 
 def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, nepochs=5, pretrained = None):
     config = {
