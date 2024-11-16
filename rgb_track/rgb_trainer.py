@@ -57,11 +57,13 @@ class RGBRunner(Runner):
 
     def _init_loaders(self):
         self.train_loader = DatasetManager.get_dataloader(self.config.datalist_config.trainlist_config,
-                                                          self.config.train_process_config)
+                                                          self.config.train_process_config,
+                                                         custom_data = custom_collate_fn)
 
         self.val_loader = DatasetManager.get_dataloader(self.config.datalist_config.testlist_configs,
                                                         self.config.train_process_config,
-                                                        shuffle=False)
+                                                        shuffle=False,
+                                                       custom_data = None)
 if __name__  == '__main__':
     torch.set_printoptions(edgeitems=1000)
     writer = SummaryWriter('runs/FAS_experiment_1')
