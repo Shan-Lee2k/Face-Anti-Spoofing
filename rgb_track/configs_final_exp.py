@@ -61,16 +61,16 @@ postprocess_transform = tv.transforms.Compose([
         key_list=modality_list),
     
     # TRANSFORM FOR MULTI STATIC IMAGE KMEANS
-    """
-    transforms.Transform4EachKey([
-        transforms.ProcessImageList(tv.transforms.Compose([
-            tv.transforms.Resize(256),
-            tv.transforms.CenterCrop(224),
-            tv.transforms.ToTensor(),
-            tv.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        ]))
-    ], key_list=static_modality),
-    """
+    
+    #transforms.Transform4EachKey([
+    #    transforms.ProcessImageList(tv.transforms.Compose([
+    #        tv.transforms.Resize(256),
+    #        tv.transforms.CenterCrop(224),
+    #        tv.transforms.ToTensor(),
+    #        tv.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    #    ]))
+    #], key_list=static_modality),
+    
     
     
     # transforms.Transform4EachKey([
