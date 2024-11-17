@@ -95,7 +95,7 @@ class RGBRunner(Runner):
     def _init_loaders(self):
         self.train_loader = DatasetManager.get_dataloader(self.config.datalist_config.trainlist_config,
                                                           self.config.train_process_config,
-                                                         custom_data = custom_collate_fn)
+                                                         custom_data = None)
 
         self.val_loader = DatasetManager.get_dataloader(self.config.datalist_config.testlist_configs,
                                                         self.config.train_process_config,
