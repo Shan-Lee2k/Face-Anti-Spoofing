@@ -14,7 +14,7 @@ pretrained_weights_dict = {
     'ImageNet_V2_Large': "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_large-5c1a4163.pth",
     'ImageNet_V1_Small':  "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_small-047dcff4.pth",
 }
-NUM_K = 5
+NUM_K = 2
 L = 16
 image_size = 112
 modality_list = ['stat_r1000', 'stat_r1']
@@ -136,7 +136,7 @@ train_image_transform = tv.transforms.Compose([
     
     
     #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)), 'data', 'optical_flow'),
-    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0,4), 'key_frame', 'optical_flow'),
+    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0,NUM_K-1), 'key_frame', 'optical_flow'),
     #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 1), (2, 4)), 'data', 'optical_flow_start'),
 
     
