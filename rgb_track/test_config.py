@@ -27,7 +27,7 @@ def get_config(protocol_name, THR = 0.5):
                 }
             },
             'nthreads': os.cpu_count(),
-            'batch_size': 512,
+            'batch_size': 32,
         },
 
         'logger_config': {
