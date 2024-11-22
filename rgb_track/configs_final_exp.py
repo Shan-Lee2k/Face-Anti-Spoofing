@@ -43,7 +43,7 @@ postprocess_transform = tv.transforms.Compose([
     transforms.CreateNewItem(transforms.RankPooling(C=1), 'data', 'stat_r1'),
 
     transforms.DeleteKeys(['data']),
-    transforms.DeleteKeys(['key_frame']),
+    #transforms.DeleteKeys(['key_frame']),
 
     transforms.Transform4EachKey([
         transforms.Transform4EachElement([
@@ -104,7 +104,7 @@ train_image_transform = tv.transforms.Compose([
     ], key_list=['data']),
     
     # Create keyframe
-    transforms.CreateNewItem(transforms.KMeanKeyFrame(NUM_K), 'data', 'key_frame'),
+    #transforms.CreateNewItem(transforms.KMeanKeyFrame(NUM_K), 'data', 'key_frame'),
     
     # Create static modality
     transforms.CreateNewItem(transforms.StaticImageTransform(L,'one'), 'data', 'random_static_image'),
@@ -135,8 +135,8 @@ train_image_transform = tv.transforms.Compose([
     
     
     
-    #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)), 'data', 'optical_flow'),
-    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0,NUM_K-1), 'key_frame', 'optical_flow'),
+    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)), 'data', 'optical_flow'),
+    #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0,NUM_K -1), 'key_frame', 'optical_flow'),
     #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 1), (2, 4)), 'data', 'optical_flow_start'),
 
     
@@ -151,13 +151,13 @@ test_image_transform = tv.transforms.Compose([
     
     
     #Create keyframe
-    transforms.CreateNewItem(transforms.KMeanKeyFrame(k=2), 'data', 'key_frame'),
+    #transforms.CreateNewItem(transforms.KMeanKeyFrame(k=2), 'data', 'key_frame'),
     
     # Create static modality
     transforms.CreateNewItem(transforms.StaticImageTransform(L,'one'), 'data', 'random_static_image'),
     
-    #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, L-1), 'data', 'optical_flow'),
-    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'key_frame', 'optical_flow'),
+    transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, L-1), 'data', 'optical_flow'),
+    #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'key_frame', 'optical_flow'),
     #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'data', 'optical_flow_start'),
 
     
@@ -206,7 +206,7 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, ne
         },
         'train_process_config': {
             'nthreads': os.cpu_count(), #os.cpu_count(),
-            'ngpu': 1,
+            'ngpu': 2,
             'batchsize': batch_size,
             'nepochs': nepochs,
             'resume': None,
