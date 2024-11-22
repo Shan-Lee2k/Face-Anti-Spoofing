@@ -206,7 +206,7 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, ne
         },
         'train_process_config': {
             'nthreads': os.cpu_count(), #os.cpu_count(),
-            'ngpu': 2,
+            'ngpu': 1,
             'batchsize': batch_size,
             'nepochs': nepochs,
             'resume': None,
