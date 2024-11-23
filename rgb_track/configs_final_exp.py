@@ -109,29 +109,29 @@ train_image_transform = tv.transforms.Compose([
     # Create static modality
     transforms.CreateNewItem(transforms.StaticImageTransform(L,'one'), 'data', 'random_static_image'),
     
-    # transforms.Transform4EachKey([
-    #     #tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
-    #     tv.transforms.RandomApply([
-    #         transforms.Transform4EachElement([
-    #             tv.transforms.RandomApply([
-    #                 tv.transforms.RandomRotation(5)
-    #             ], p=0.5)
-    #         ])], p=0.5),
-    #     tv.transforms.RandomApply([
-    #         transforms.Transform4EachElement([
-    #             tv.transforms.RandomApply([
-    #                 tv.transforms.RandomCrop(image_size, padding=5, pad_if_needed=True)
-    #             ], p=0.5)
-    #         ])
-    #     ], p=0.5),
-    #     tv.transforms.RandomApply([
-    #         transforms.Transform4EachElement([
-    #             tv.transforms.RandomApply([
-    #                 tv.transforms.ColorJitter(0.05, 0.05, 0.05, 0.00)
-    #             ], p=0.5)
-    #         ])
-    #     ], p=0.5),
-    # ], key_list=['data']),
+    transforms.Transform4EachKey([
+        #tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
+        tv.transforms.RandomApply([
+            transforms.Transform4EachElement([
+                tv.transforms.RandomApply([
+                    tv.transforms.RandomRotation(5)
+                ], p=0.5)
+            ])], p=0.5),
+        tv.transforms.RandomApply([
+            transforms.Transform4EachElement([
+                tv.transforms.RandomApply([
+                    tv.transforms.RandomCrop(image_size, padding=5, pad_if_needed=True)
+                ], p=0.5)
+            ])
+        ], p=0.5),
+        tv.transforms.RandomApply([
+            transforms.Transform4EachElement([
+                tv.transforms.RandomApply([
+                    tv.transforms.ColorJitter(0.05, 0.05, 0.05, 0.00)
+                ], p=0.5)
+            ])
+        ], p=0.5),
+    ], key_list=['data']),
     
     
     
