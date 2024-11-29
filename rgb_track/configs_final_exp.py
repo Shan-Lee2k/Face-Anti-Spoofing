@@ -28,7 +28,10 @@ test_seq_transform = tv.transforms.Compose([
 train_seq_transform = tv.transforms.Compose([
     tv.transforms.RandomApply([
         s_transforms.DuplicateElements(1, False, ['data'], 'target', 1, True)
-    ], p=0.5),
+    ], p=0.2),
+    tv.transforms.RandomApply([
+        s_transforms.DuplicateElements(1, False, ['data'], 'target', 0, False)
+    ], p=0.3),
     s_transforms.LinspaceTransform(L, key_list=['data'], max_start_index=0),
 ])
 
