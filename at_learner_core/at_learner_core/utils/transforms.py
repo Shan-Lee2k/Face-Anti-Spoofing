@@ -130,7 +130,39 @@ class RandomZoom(object):
 
     def __repr__(self):
         return self.__class__.__name__ + '(size={}-{})'.format(self.size_min,self.size_max)
+        
+class RandomZoomWithResize(object):
+    def __init__(self, size, target_size=(112, 112)):
+        """
+        Args:
+            size (tuple): (size_min, size_max) for random crop size.
+            target_size (tuple): The target size to resize the cropped image (default: (112, 112)).
+        """
+        self.size_min = size[0]
+        self.size_max = size[1]
+        self.target_size = target_size
+                       
+    def __call__(self, imgs):
+        # Random crop size
+        p_size = np.random.randint(self.size_min, self.size_max + 1)
+        crop_size = (int(p_size), int(p_size))
 
+        # Perform center crop and resize
+        out = [
+            F.resize(F.center_crop(img, crop_size), self.target_size) 
+            for img in imgs
+        ]
+
+        # Return result
+        if len(out) == 1:
+            return out[0]
+        else:
+            return out
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(crop_size={}-{}, target_size={})'.format(
+            self.size_min, self.size_max, self.target_size
+        )
 
 class LiuOpticalFlowTransform(object):
     def __init__(self, first_index, second_index):
