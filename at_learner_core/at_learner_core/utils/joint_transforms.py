@@ -796,7 +796,7 @@ class RandomRotation(object):
             Default is the center of the image.
     """
 
-    def __init__(self, degrees, resample= 0, expand=False, center=None):
+    def __init__(self, degrees, resample= F._interpolation_modes_from_int(0), expand=False, center=None):
         if isinstance(degrees, numbers.Number):
             if degrees < 0:
                 raise ValueError("If degrees is a single number, it must be positive.")
