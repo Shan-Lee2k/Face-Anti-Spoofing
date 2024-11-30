@@ -218,10 +218,10 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, ne
                 'lr_config': {
                     'lr_type': 'StepLR',
                     'lr': learning_rate,
-                    'lr_decay_period':5,
+                    'lr_decay_period':3,
                     'lr_decay_lvl': 0.5,
                 },
-                'weight_decay': 1e-05,
+                'weight_decay': 5e-05,
             },
         },
         'test_process_config': {
