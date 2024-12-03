@@ -31,7 +31,7 @@ train_seq_transform = tv.transforms.Compose(
     [
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 1, True)],
-            p=0.3,
+            p=0.4,
         ),
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 0, False)],
@@ -121,7 +121,7 @@ train_image_transform = tv.transforms.Compose(
                             target_size=(image_size, image_size),
                         )
                     ],
-                    p=1,
+                    p=0.8,
                 ),
                 tv.transforms.RandomApply(
                     [j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5
@@ -132,6 +132,12 @@ train_image_transform = tv.transforms.Compose(
         transforms.Transform4EachKey(
             [
                 # tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
+                tv.transforms.RandomApply([
+                    transforms.Transform4EachElement([
+                        tv.transforms.RandomApply([
+                            tv.transforms.RandomRotation(5)
+                        ], p=0.5)
+                    ])], p=0.5),
                 tv.transforms.RandomApply(
                     [
                         transforms.Transform4EachElement(
@@ -170,7 +176,7 @@ train_image_transform = tv.transforms.Compose(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
         ),
         # Create keyframe
-        # transforms.CreateNewItem(transforms.KMeanKeyFrame(k=NUM_K), "data", "key_frame"),
+        #transforms.CreateNewItem(transforms.KMeanKeyFrame(k=NUM_K), "data", "key_frame"),
         # Create OFTICAL FLOW
         transforms.CreateNewItem(
             transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)),
@@ -198,7 +204,7 @@ test_image_transform = tv.transforms.Compose(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
         ),
         transforms.CreateNewItem(
-            transforms.LiuOpticalFlowTransform(0, (L - 4, L)), "data", "optical_flow"
+            transforms.LiuOpticalFlowTransform(0, (L - 2, L)), "data", "optical_flow"
         ),
         # transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'key_frame', 'optical_flow'),
         postprocess_transform,
