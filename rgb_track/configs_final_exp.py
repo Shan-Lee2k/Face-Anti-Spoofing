@@ -114,15 +114,17 @@ train_image_transform = tv.transforms.Compose(
                 # tv.transforms.RandomApply(
                 #     [j_transforms.RandomRotation((-5,5))], p= 1
                 # ),
-                tv.transforms.RandomApply(
-                    [
-                        transforms.RandomZoomWithResize(
-                            (image_size - 6, image_size - 2),
-                            target_size=(image_size, image_size),
-                        )
-                    ],
-                    p=0.8,
-                ),
+                
+                # tv.transforms.RandomApply(
+                #     [
+                #         transforms.RandomZoomWithResize(
+                #             (image_size - 6, image_size - 2),
+                #             target_size=(image_size, image_size),
+                #         )
+                #     ],
+                #     p=0.8,
+                # ),
+                
                 tv.transforms.RandomApply(
                     [j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5
                 ),
@@ -203,9 +205,9 @@ test_image_transform = tv.transforms.Compose(
         transforms.CreateNewItem(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
         ),
-        #transforms.CreateNewItem(
-        #    transforms.LiuOpticalFlowTransform(0, 1)), "key_frame", "optical_flow"
-        #),
+        # transforms.CreateNewItem(
+        #     transforms.LiuOpticalFlowTransform(0, (L - 2, L)), "data", "optical_flow"
+        # ),
         transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'key_frame', 'optical_flow'),
         postprocess_transform,
     ]
