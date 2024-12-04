@@ -200,7 +200,7 @@ test_image_transform = tv.transforms.Compose(
             key_list=["data"],
         ),
         # Create keyframe
-        transforms.CreateNewItem(transforms.KMeanKeyFrame(k=2), "data", "key_frame"),
+        #transforms.CreateNewItem(transforms.KMeanKeyFrame(k=2), "data", "key_frame"),
         # Create static modality
         transforms.CreateNewItem(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
