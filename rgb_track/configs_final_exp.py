@@ -205,10 +205,10 @@ test_image_transform = tv.transforms.Compose(
         transforms.CreateNewItem(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
         ),
-        # transforms.CreateNewItem(
-        #     transforms.LiuOpticalFlowTransform(0, (L - 2, L)), "data", "optical_flow"
-        # ),
-        transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'key_frame', 'optical_flow'),
+        transforms.CreateNewItem(
+            transforms.LiuOpticalFlowTransform(0, (L - 2, L)), "data", "optical_flow"
+        ),
+        #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'key_frame', 'optical_flow'),
         postprocess_transform,
     ]
 )
