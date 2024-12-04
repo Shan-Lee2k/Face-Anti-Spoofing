@@ -198,15 +198,15 @@ test_image_transform = tv.transforms.Compose(
             key_list=["data"],
         ),
         # Create keyframe
-        #transforms.CreateNewItem(transforms.KMeanKeyFrame(k=2), "data", "key_frame"),
+        transforms.CreateNewItem(transforms.KMeanKeyFrame(k=2), "data", "key_frame"),
         # Create static modality
         transforms.CreateNewItem(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
         ),
-        transforms.CreateNewItem(
-            transforms.LiuOpticalFlowTransform(0, (L - 2, L)), "data", "optical_flow"
-        ),
-        # transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'key_frame', 'optical_flow'),
+        #transforms.CreateNewItem(
+        #    transforms.LiuOpticalFlowTransform(0, 1)), "key_frame", "optical_flow"
+        #),
+        transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'key_frame', 'optical_flow'),
         postprocess_transform,
     ]
 )
