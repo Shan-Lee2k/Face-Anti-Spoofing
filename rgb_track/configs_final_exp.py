@@ -122,7 +122,7 @@ train_image_transform = tv.transforms.Compose(
                             target_size=(image_size, image_size),
                         )
                     ],
-                    p=0.8,
+                    p=0.5,
                 ),
                 
                 tv.transforms.RandomApply(
