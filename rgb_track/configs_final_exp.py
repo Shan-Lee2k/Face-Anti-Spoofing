@@ -115,15 +115,15 @@ train_image_transform = tv.transforms.Compose(
                 #     [j_transforms.RandomRotation((-5,5))], p= 1
                 # ),
                 
-                # tv.transforms.RandomApply(
-                #     [
-                #         transforms.RandomZoomWithResize(
-                #             (image_size - 6, image_size - 2),
-                #             target_size=(image_size, image_size),
-                #         )
-                #     ],
-                #     p=0.8,
-                # ),
+                tv.transforms.RandomApply(
+                    [
+                        transforms.RandomZoomWithResize(
+                            (image_size - 6, image_size - 2),
+                            target_size=(image_size, image_size),
+                        )
+                    ],
+                    p=0.8,
+                ),
                 
                 tv.transforms.RandomApply(
                     [j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5
