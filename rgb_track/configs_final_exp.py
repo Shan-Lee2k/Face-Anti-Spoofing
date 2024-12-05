@@ -31,14 +31,15 @@ train_seq_transform = tv.transforms.Compose(
     [
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 1, True)],
-            p=0.4,
+            p=0.3,
         ),
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 0, False)],
-            p=0.4,
+            p=0.3,
         ),
         s_transforms.LinspaceTransform(L, key_list=["data"], max_start_index=0),
     ]
+    print("=============== SEQUENCE TRANSFORM SUCCESSFULLY! ===============")
 )
 
 preprocess_transform = transforms.Transform4EachElement(
