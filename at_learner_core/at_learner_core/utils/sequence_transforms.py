@@ -178,7 +178,6 @@ class DuplicateElements(object):
 
             if self.change_label:
                 item_dict[self.target_key] = 1 - self.target_value
-            print("=============== SEQUENCE TRANSFORM SUCCESSFULLY! ===============")
         return item_dict
 
     def __repr__(self):
