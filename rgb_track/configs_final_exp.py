@@ -39,7 +39,6 @@ train_seq_transform = tv.transforms.Compose(
         ),
         s_transforms.LinspaceTransform(L, key_list=["data"], max_start_index=0),
     ]
-    print("=============== SEQUENCE TRANSFORM SUCCESSFULLY! ===============")
 )
 
 preprocess_transform = transforms.Transform4EachElement(
