@@ -35,7 +35,7 @@ train_seq_transform = tv.transforms.Compose(
         ),
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 0, False)],
-            p=0.5,
+            p=0.2,
         ),
         s_transforms.LinspaceTransform(L, key_list=["data"], max_start_index=0),
     ]
@@ -235,7 +235,7 @@ def get_config(protocol_name, batch_size=32, learning_rate=0.0001, THR = 0.5, ne
                 'sampler_config': {
                     'name': 'NumElements',
                     'class_column': 'label',
-                    'num_elem_per_epoch': 20.0,
+                    'num_elem_per_epoch': 25.0,
                 },
                 'sequence_transforms': train_seq_transform,
                 'transforms': train_image_transform,
