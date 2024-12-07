@@ -15,7 +15,7 @@ pretrained_weights_dict = {
     "ImageNet_V1_Small": "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_small-047dcff4.pth",
 }
 NUM_K = 2
-L = 32
+L = 16
 image_size = 112
 modality_list = ["stat_r1000", "stat_r1"]
 of_modality_list = ["optical_flow"]  # , 'optical_flow_start']
@@ -31,7 +31,7 @@ train_seq_transform = tv.transforms.Compose(
     [
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 1, True)],
-            p=0.4,
+            p=0.6,
         ),
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 0, False)],
