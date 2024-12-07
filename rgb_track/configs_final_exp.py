@@ -31,7 +31,7 @@ train_seq_transform = tv.transforms.Compose(
     [
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 1, True)],
-            p=0.5,
+            p=0.4,
         ),
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 0, False)],
