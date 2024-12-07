@@ -108,8 +108,41 @@ class KMeanKeyFrame(object):
         #keyframes = np_images[keyframe_indices]
         # Convert into List[PIL]
         return [images[idx] for idx in keyframe_indices] # List PIL
-        
-                
+
+class TwoFrame(object):
+    """
+    Return 2 most different frames images (PIL)
+    """
+    def __init__(self, k):
+        self.k = 2
+
+    def __call__(self, images):
+        # Convert images to grayscale numpy arrays
+        grayscale_arrays = [np.array(img.convert('L')) for img in images]
+        stacked_array = np.stack(grayscale_arrays, axis=0)
+
+        # Reshape frames to (n, m): n - frame count, m - number of pixels
+        np_images_flattened = stacked_array.reshape(stacked_array.shape[0], -1)
+
+        # Use PCA to reduce dimensions to 5 for computational efficiency
+        pca = PCA(n_components=5)
+        frames_2dim = pca.fit_transform(np_images_flattened)
+
+        # Compute pairwise distances between frames
+        pairwise_distances = np.linalg.norm(frames_2dim[:, None] - frames_2dim[None, :], axis=2)
+
+        # Check if all frames are identical (distance matrix has all zeros)
+        if np.allclose(pairwise_distances, 0):
+            print("All frames are identical. Selecting the first and last frame.")
+            keyframe_indices = [0, len(images) - 1] if len(images) > 1 else [0, 0]
+        else:
+            # Find the pair of frames with the largest distance
+            indices = np.unravel_index(np.argmax(pairwise_distances, axis=None), pairwise_distances.shape)
+            keyframe_indices = sorted(indices)
+
+        # Return the selected frames as a list of PIL images
+        return [images[idx] for idx in keyframe_indices]
+
 
       
 class RandomZoom(object):
