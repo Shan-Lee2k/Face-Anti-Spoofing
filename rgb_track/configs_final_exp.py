@@ -54,7 +54,7 @@ postprocess_transform = tv.transforms.Compose(
         transforms.CreateNewItem(transforms.RankPooling(C=1000), "data", "stat_r1000"),
         transforms.CreateNewItem(transforms.RankPooling(C=1), "data", "stat_r1"),
         transforms.DeleteKeys(["data"]),
-        # transforms.DeleteKeys(['key_frame']),
+        transforms.DeleteKeys(['key_frame']),
         transforms.Transform4EachKey(
             [
                 transforms.Transform4EachElement(
@@ -196,14 +196,14 @@ train_image_transform = tv.transforms.Compose(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
         ),
         # Create keyframe
-        #transforms.CreateNewItem(transforms.KMeanKeyFrame(k=NUM_K), "data", "key_frame"),
+        transforms.CreateNewItem(transforms.TwoFrame(k=NUM_K), "data", "key_frame"),
         # Create OFTICAL FLOW
-        transforms.CreateNewItem(
-            transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)),
-            "data",
-            "optical_flow",
-        ),
-        # transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0,NUM_K -1), 'key_frame', 'optical_flow'),
+        # transforms.CreateNewItem(
+        #     transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)),
+        #     "data",
+        #     "optical_flow",
+        # ),
+        transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0,1), 'key_frame', 'optical_flow'),
         # transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 1), (2, 4)), 'data', 'optical_flow_start'),
         postprocess_transform,
     ]
@@ -218,15 +218,15 @@ test_image_transform = tv.transforms.Compose(
             key_list=["data"],
         ),
         # Create keyframe
-        #transforms.CreateNewItem(transforms.KMeanKeyFrame(k=2), "data", "key_frame"),
+        transforms.CreateNewItem(transforms.TwoFrame(k=2), "data", "key_frame"),
         # Create static modality
         transforms.CreateNewItem(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
         ),
-        transforms.CreateNewItem(
-            transforms.LiuOpticalFlowTransform(0, (L - 2, L)), "data", "optical_flow"
-        ),
-        #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'key_frame', 'optical_flow'),
+        # transforms.CreateNewItem(
+        #     transforms.LiuOpticalFlowTransform(0, (L - 2, L)), "data", "optical_flow"
+        # ),
+        transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, 1), 'key_frame', 'optical_flow'),
         postprocess_transform,
     ]
 )
