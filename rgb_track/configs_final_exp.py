@@ -30,12 +30,12 @@ test_seq_transform = tv.transforms.Compose(
 train_seq_transform = tv.transforms.Compose(
     [
         tv.transforms.RandomApply(
-            [s_transforms.DuplicateElements(1, False, ["data"], "target", 1, True)],
-            p=0.6,
+            [s_transforms.DuplicateElements(1, True, ["data"], "target", 1, True)],
+            p=0.5,
         ),
         tv.transforms.RandomApply(
-            [s_transforms.DuplicateElements(1, False, ["data"], "target", 0, False)],
-            p=0.2,
+            [s_transforms.DuplicateElements(1, True, ["data"], "target", 0, False)],
+            p=0.3,
         ),
         s_transforms.LinspaceTransform(L, key_list=["data"], max_start_index=0),
     ]
@@ -111,19 +111,20 @@ train_image_transform = tv.transforms.Compose(
         transforms.Transform4EachKey(
             [
                 preprocess_transform,
+                  
                 # tv.transforms.RandomApply(
-                #     [j_transforms.RandomRotation((-5,5))], p= 1
+                #     [j_transforms.RandomRotation((-5,5))], p= 0.5
                 # ),
                 
-                tv.transforms.RandomApply(
-                    [
-                        transforms.RandomZoomWithResize(
-                            (image_size - 6, image_size - 2),
-                            target_size=(image_size, image_size),
-                        )
-                    ],
-                    p=0.5,
-                ),
+                # tv.transforms.RandomApply(
+                #     [
+                #         transforms.RandomZoomWithResizeList(
+                #             (image_size - 6, image_size - 2),
+                #             target_size=(image_size, image_size),
+                #         )
+                #     ],
+                #     p=0.5,
+                # ),
                 
                 tv.transforms.RandomApply(
                     [j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5
@@ -131,15 +132,32 @@ train_image_transform = tv.transforms.Compose(
             ],
             key_list=["data"],
         ),
+
+        ##### TRANSFORM  
+        ##### FOR
+        ##### EACH IMAGE
+        
         transforms.Transform4EachKey(
             [
-                # tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
+                #tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
                 tv.transforms.RandomApply([
                     transforms.Transform4EachElement([
                         tv.transforms.RandomApply([
-                            tv.transforms.RandomRotation(5)
+                            transforms.RandomZoomWithResize(
+                            (image_size - 6, image_size - 2),
+                            target_size=(image_size, image_size),
+                        )
                         ], p=0.5)
                     ])], p=0.5),
+                
+                tv.transforms.RandomApply([
+                    transforms.Transform4EachElement([
+                        tv.transforms.RandomApply([
+                            tv.transforms.RandomRotation(10)
+                        ], p=0.5)
+                    ])], p=0.5),
+                
+                
                 tv.transforms.RandomApply(
                     [
                         transforms.Transform4EachElement(
