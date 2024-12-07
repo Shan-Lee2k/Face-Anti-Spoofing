@@ -30,7 +30,7 @@ class CreateNewItem(object):
         format_string += str(self.key) + ', ' + str(self.new_key)
         format_string += ')'
         return format_string
-
+    
 class ProcessImageList:
     """Applies a set of transformations to each image in a list."""
     def __init__(self, transform):
@@ -40,8 +40,6 @@ class ProcessImageList:
         if isinstance(images, list):  # Apply the transform to each image in the list
             return [self.transform(img) if isinstance(img, Image.Image) else img for img in images]
         return self.transform(images)  # Apply directly if it's not a list
-
-
 # Static Modality
 class StaticImageTransform(object):
     def __init__(self, index_range, mode = 'one' or 'multi'):
@@ -83,12 +81,12 @@ class KMeanKeyFrame(object):
         #print("Decomposing...")
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
-            pca = PCA(n_components=2)
+            pca = PCA(n_components=5)
             frames_2dim = pca.fit_transform(np_images_flattened)
             
             # Check if a warning was raised
             if any("invalid value encountered in true_divide" in str(warning.message) for warning in w):
-                #print("Choose first frame for print attack")
+                print("Choose first frame for print attack")
                 return [images[0] for i in range(self.k)]
         #print(f"Frames shape after PCA: {frames_2dim.shape}")
         # Create a K-Means clustering model
@@ -104,8 +102,8 @@ class KMeanKeyFrame(object):
             closest_frame_index = cluster_indices[np.argmin(np.linalg.norm(frames_2dim[cluster_indices] - kmeans.cluster_centers_[i], axis=1))]
             keyframe_indices.append(closest_frame_index)
         keyframe_indices = sorted(keyframe_indices)
-        #print(f'Num of keys {num_cluster}')
-        #print(keyframe_indices)
+        print(f'Num of keys {num_cluster}')
+        print(keyframe_indices)
         # Extract the keyframes from the original frames
         #keyframes = np_images[keyframe_indices]
         # Convert into List[PIL]
@@ -130,8 +128,8 @@ class RandomZoom(object):
 
     def __repr__(self):
         return self.__class__.__name__ + '(size={}-{})'.format(self.size_min,self.size_max)
-        
-class RandomZoomWithResize(object):
+
+class RandomZoomWithResizeList(object):
     def __init__(self, size, target_size=(112, 112)):
         """
         Args:
@@ -153,17 +151,36 @@ class RandomZoomWithResize(object):
             for img in imgs
         ]
 
-        # Return result
-        if len(out) == 1:
-            return out[0]
-        else:
-            return out
+        return out
 
     def __repr__(self):
         return self.__class__.__name__ + '(crop_size={}-{}, target_size={})'.format(
             self.size_min, self.size_max, self.target_size
         )
+class RandomZoomWithResize(object):
+    def __init__(self, size, target_size=(112, 112)):
+        """
+        Args:
+            size (tuple): (size_min, size_max) for random crop size.
+            target_size (tuple): The target size to resize the cropped image (default: (112, 112)).
+        """
+        self.size_min = size[0]
+        self.size_max = size[1]
+        self.target_size = target_size
+                       
+    def __call__(self, img):
+        # Random crop size
+        p_size = np.random.randint(self.size_min, self.size_max + 1)
+        crop_size = (int(p_size), int(p_size))
 
+        # Perform center crop and resize
+
+        return F.resize(F.center_crop(img, crop_size), self.target_size)
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(crop_size={}-{}, target_size={})'.format(
+            self.size_min, self.size_max, self.target_size
+        )
 class LiuOpticalFlowTransform(object):
     def __init__(self, first_index, second_index):
         self.first_index = first_index
@@ -548,7 +565,27 @@ class RandomBlur(object):
     def __repr__(self):
         return self.__class__.__name__
     
-    
+class ShiftTransform(object):
+    def __init__(self, shift_x=0, shift_y=0):
+        """
+        shift_x: Số pixel dịch chuyển theo trục x (ngang).
+        shift_y: Số pixel dịch chuyển theo trục y (dọc).
+        """
+        self.shift_x = shift_x
+        self.shift_y = shift_y
+
+    def __call__(self, img):
+        # Dịch chuyển bằng cách padding rồi crop
+        padding = (self.shift_x, self.shift_y, -self.shift_x, -self.shift_y)
+        img = F.pad(img, padding, fill=0)  # Điền pixel viền bằng 0 (màu đen)
+        img = F.crop(
+            img,
+            top=max(0, -self.shift_y),
+            left=max(0, -self.shift_x),
+            height=img.size[1],
+            width=img.size[0],
+        )
+        return img    
     
 class SquarePad(object):
     
