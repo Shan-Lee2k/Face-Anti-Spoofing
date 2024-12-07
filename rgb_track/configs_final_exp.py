@@ -15,7 +15,7 @@ pretrained_weights_dict = {
     "ImageNet_V1_Small": "C:/Users/PC/Documents/GitHub/Face-Anti-Spoofing/at_learner_core/at_learner_core/models/architectures/mobilenet_v3_small-047dcff4.pth",
 }
 NUM_K = 2
-L = 16
+L = 32
 image_size = 112
 modality_list = ["stat_r1000", "stat_r1"]
 of_modality_list = ["optical_flow"]  # , 'optical_flow_start']
