@@ -102,8 +102,8 @@ class KMeanKeyFrame(object):
             closest_frame_index = cluster_indices[np.argmin(np.linalg.norm(frames_2dim[cluster_indices] - kmeans.cluster_centers_[i], axis=1))]
             keyframe_indices.append(closest_frame_index)
         keyframe_indices = sorted(keyframe_indices)
-        print(f'Num of keys {num_cluster}')
-        print(keyframe_indices)
+        #print(f'Num of keys {num_cluster}')
+        #print(keyframe_indices)
         # Extract the keyframes from the original frames
         #keyframes = np_images[keyframe_indices]
         # Convert into List[PIL]
