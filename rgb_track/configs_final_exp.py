@@ -33,10 +33,10 @@ train_seq_transform = tv.transforms.Compose(
             [s_transforms.DuplicateElements(1, True, ["data"], "target", 1, True)],
             p=0.5,
         ),
-        tv.transforms.RandomApply(
-            [s_transforms.DuplicateElements(1, True, ["data"], "target", 0, False)],
-            p=0.2,
-        ),
+        # tv.transforms.RandomApply(
+        #     [s_transforms.DuplicateElements(1, True, ["data"], "target", 0, False)],
+        #     p=0.2,
+        # ),
         s_transforms.LinspaceTransform(L, key_list=["data"], max_start_index=0),
     ]
 )
@@ -54,7 +54,7 @@ postprocess_transform = tv.transforms.Compose(
         transforms.CreateNewItem(transforms.RankPooling(C=1000), "data", "stat_r1000"),
         transforms.CreateNewItem(transforms.RankPooling(C=1), "data", "stat_r1"),
         transforms.DeleteKeys(["data"]),
-        transforms.DeleteKeys(['key_frame']),
+        #transforms.DeleteKeys(['key_frame']),
         transforms.Transform4EachKey(
             [
                 transforms.Transform4EachElement(
@@ -126,9 +126,9 @@ train_image_transform = tv.transforms.Compose(
                 #     p=0.5,
                 # ),
                 
-                tv.transforms.RandomApply(
-                    [j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5
-                ),
+                # tv.transforms.RandomApply(
+                #     [j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5
+                # ),
             ],
             key_list=["data"],
         ),
@@ -140,20 +140,20 @@ train_image_transform = tv.transforms.Compose(
         transforms.Transform4EachKey(
             [
                 #tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
-                tv.transforms.RandomApply([
-                    transforms.Transform4EachElement([
-                        tv.transforms.RandomApply([
-                            transforms.RandomZoomWithResize(
-                            (image_size - 6, image_size - 2),
-                            target_size=(image_size, image_size),
-                        )
-                        ], p=0.5)
-                    ])], p=0.5),
+                # tv.transforms.RandomApply([
+                #     transforms.Transform4EachElement([
+                #         tv.transforms.RandomApply([
+                #             transforms.RandomZoomWithResize(
+                #             (image_size - 6, image_size - 2),
+                #             target_size=(image_size, image_size),
+                #         )
+                #         ], p=0.5)
+                #     ])], p=0.5),
                 
                 tv.transforms.RandomApply([
                     transforms.Transform4EachElement([
                         tv.transforms.RandomApply([
-                            tv.transforms.RandomRotation(10)
+                            tv.transforms.RandomRotation(5)
                         ], p=0.5)
                     ])], p=0.5),
                 
@@ -175,19 +175,19 @@ train_image_transform = tv.transforms.Compose(
                     ],
                     p=0.5,
                 ),
-                tv.transforms.RandomApply(
-                    [
-                        transforms.Transform4EachElement(
-                            [
-                                tv.transforms.RandomApply(
-                                    [tv.transforms.ColorJitter(0.05, 0.05, 0.05, 0.00)],
-                                    p=0.5,
-                                )
-                            ]
-                        )
-                    ],
-                    p=0.5,
-                ),
+                # tv.transforms.RandomApply(
+                #     [
+                #         transforms.Transform4EachElement(
+                #             [
+                #                 tv.transforms.RandomApply(
+                #                     [tv.transforms.ColorJitter(0.05, 0.05, 0.05, 0.00)],
+                #                     p=0.5,
+                #                 )
+                #             ]
+                #         )
+                #     ],
+                #     p=0.5,
+                # ),
             ],
             key_list=["data"],
         ),
@@ -196,14 +196,14 @@ train_image_transform = tv.transforms.Compose(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
         ),
         # Create keyframe
-        transforms.CreateNewItem(transforms.KMeanKeyFrame(k=NUM_K), "data", "key_frame"),
+        #transforms.CreateNewItem(transforms.TwoFrame(k=NUM_K), "data", "key_frame"),
         # Create OFTICAL FLOW
-        # transforms.CreateNewItem(
-        #     transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)),
-        #     "data",
-        #     "optical_flow",
-        # ),
-        transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0,NUM_K-1), 'key_frame', 'optical_flow'),
+        transforms.CreateNewItem(
+            transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)),
+            "data",
+            "optical_flow",
+        ),
+        #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0,NUM_K-1), 'key_frame', 'optical_flow'),
         # transforms.CreateNewItem(transforms.LiuOpticalFlowTransform((0, 1), (2, 4)), 'data', 'optical_flow_start'),
         postprocess_transform,
     ]
@@ -218,15 +218,15 @@ test_image_transform = tv.transforms.Compose(
             key_list=["data"],
         ),
         # Create keyframe
-        transforms.CreateNewItem(transforms.KMeanKeyFrame(k=NUM_K), "data", "key_frame"),
+        #transforms.CreateNewItem(transforms.KMeanKeyFrame(k=NUM_K), "data", "key_frame"),
         # Create static modality
         transforms.CreateNewItem(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
         ),
-        # transforms.CreateNewItem(
-        #     transforms.LiuOpticalFlowTransform(0, (L - 2, L)), "data", "optical_flow"
-        # ),
-        transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, NUM_K-1 ), 'key_frame', 'optical_flow'),
+        transforms.CreateNewItem(
+            transforms.LiuOpticalFlowTransform(0, (L - 2, L)), "data", "optical_flow"
+        ),
+        #transforms.CreateNewItem(transforms.LiuOpticalFlowTransform(0, NUM_K-1 ), 'key_frame', 'optical_flow'),
         postprocess_transform,
     ]
 )
