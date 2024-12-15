@@ -31,12 +31,12 @@ train_seq_transform = tv.transforms.Compose(
     [
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, True, ["data"], "target", 1, True)],
-            p=0.5,
+            p=0.4,
         ),
-        # tv.transforms.RandomApply(
-        #     [s_transforms.DuplicateElements(1, True, ["data"], "target", 0, False)],
-        #     p=0.2,
-        # ),
+        tv.transforms.RandomApply(
+            [s_transforms.DuplicateElements(1, True, ["data"], "target", 0, False)],
+            p=0.3,
+        ),
         s_transforms.LinspaceTransform(L, key_list=["data"], max_start_index=0),
     ]
 )
@@ -126,9 +126,9 @@ train_image_transform = tv.transforms.Compose(
                 #     p=0.5,
                 # ),
                 
-                # tv.transforms.RandomApply(
-                #     [j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5
-                # ),
+                tv.transforms.RandomApply(
+                    [j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5
+                ),
             ],
             key_list=["data"],
         ),
@@ -175,19 +175,19 @@ train_image_transform = tv.transforms.Compose(
                     ],
                     p=0.5,
                 ),
-                # tv.transforms.RandomApply(
-                #     [
-                #         transforms.Transform4EachElement(
-                #             [
-                #                 tv.transforms.RandomApply(
-                #                     [tv.transforms.ColorJitter(0.05, 0.05, 0.05, 0.00)],
-                #                     p=0.5,
-                #                 )
-                #             ]
-                #         )
-                #     ],
-                #     p=0.5,
-                # ),
+                tv.transforms.RandomApply(
+                    [
+                        transforms.Transform4EachElement(
+                            [
+                                tv.transforms.RandomApply(
+                                    [tv.transforms.ColorJitter(0.05, 0.05, 0.05, 0.00)],
+                                    p=0.5,
+                                )
+                            ]
+                        )
+                    ],
+                    p=0.5,
+                ),
             ],
             key_list=["data"],
         ),
@@ -196,7 +196,7 @@ train_image_transform = tv.transforms.Compose(
             transforms.StaticImageTransform(L, "one"), "data", "random_static_image"
         ),
         # Create keyframe
-        #transforms.CreateNewItem(transforms.TwoFrame(k=NUM_K), "data", "key_frame"),
+        #transforms.CreateNewItem(transforms.KMeanKeyFrame(k=NUM_K), "data", "key_frame"),
         # Create OFTICAL FLOW
         transforms.CreateNewItem(
             transforms.LiuOpticalFlowTransform((0, 4), (L - 4, L)),
