@@ -139,16 +139,15 @@ train_image_transform = tv.transforms.Compose(
         
         transforms.Transform4EachKey(
             [
-                #tv.transforms.RandomApply([j_transforms.ColorJitter(0.2, 0.2, 0.2, 0.2)], p=0.5),
-                # tv.transforms.RandomApply([
-                #     transforms.Transform4EachElement([
-                #         tv.transforms.RandomApply([
-                #             transforms.RandomZoomWithResize(
-                #             (image_size - 6, image_size - 2),
-                #             target_size=(image_size, image_size),
-                #         )
-                #         ], p=0.5)
-                #     ])], p=0.5),
+                tv.transforms.RandomApply([
+                    transforms.Transform4EachElement([
+                        tv.transforms.RandomApply([
+                            transforms.RandomZoomWithResize(
+                            (image_size - 6, image_size - 2),
+                            target_size=(image_size, image_size),
+                        )
+                        ], p=0.5)
+                    ])], p=0.5),
                 
                 tv.transforms.RandomApply([
                     transforms.Transform4EachElement([
