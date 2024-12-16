@@ -73,7 +73,7 @@ class MobileNetV3_Custom(nn.Module):
                 self.load_state_dict(new_dict, strict= False)
             else: self.load_state_dict(pretrained_weights,strict=False)
             # Freeze all feature extractor parameters
-            for param in list(self.features.parameters())[:-16]:  #-42
+            for param in list(self.features.parameters())[:-42]:  #-42 -16
                 param.requires_grad = False  # Freeze all parameters
         
         #self.dropout1 = nn.Dropout(p=self.drop_out_rate)
