@@ -31,11 +31,11 @@ train_seq_transform = tv.transforms.Compose(
     [
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 1, True)],
-            p=0.5,
+            p=0.4,
         ),
         tv.transforms.RandomApply(
             [s_transforms.DuplicateElements(1, False, ["data"], "target", 0, False)],
-            p=0.5,
+            p=0.4,
         ),
         s_transforms.LinspaceTransform(L, key_list=["data"], max_start_index=0),
     ]
@@ -139,15 +139,15 @@ train_image_transform = tv.transforms.Compose(
         
         transforms.Transform4EachKey(
             [
-                tv.transforms.RandomApply([
-                    transforms.Transform4EachElement([
-                        tv.transforms.RandomApply([
-                            transforms.RandomZoomWithResize(
-                            (image_size - 6, image_size - 2),
-                            target_size=(image_size, image_size),
-                        )
-                        ], p=0.5)
-                    ])], p=0.5),
+                # tv.transforms.RandomApply([
+                #     transforms.Transform4EachElement([
+                #         tv.transforms.RandomApply([
+                #             transforms.RandomZoomWithResize(
+                #             (image_size - 6, image_size - 2),
+                #             target_size=(image_size, image_size),
+                #         )
+                #         ], p=0.5)
+                #     ])], p=0.5),
                 
                 tv.transforms.RandomApply([
                     transforms.Transform4EachElement([
